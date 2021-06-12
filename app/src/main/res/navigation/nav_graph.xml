@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/BContactFragment">
+
+    <fragment
+        android:id="@+id/BContactFragment"
+        android:name="com.manishjandu.bcontacts.ui.bcontact.BContactFragment"
+        android:label="fragment_b_contact"
+        tools:layout="@layout/fragment_b_contact" />
+    <fragment
+        android:id="@+id/AllContactFragment"
+        android:name="com.manishjandu.bcontacts.ui.allcontact.AllContactFragment"
+        android:label="fragment_all_contact"
+        tools:layout="@layout/fragment_all_contact" />
+</navigation>

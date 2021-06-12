@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/BContactFragment"
+        android:title="B Contact"
+        android:enabled="true"
+        android:icon="@drawable/ic_b_contact"
+        />
+    <item
+        android:id="@+id/AllContactFragment"
+        android:title="All Contact"
+        android:enabled="true"
+        android:icon="@drawable/ic_all_contact"
+        />
+</menu>
