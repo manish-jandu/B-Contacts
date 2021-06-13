@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">BContacts</string>
+    <string name="contact_name">Name</string>
+    <string name="contact_number">9461088546</string>
+    <string name="button_call">Button for calling</string>
+    <string name="button_message">button for messaging</string>
 </resources>

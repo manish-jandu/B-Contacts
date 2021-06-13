@@ -1,31 +1,71 @@
 package com.manishjandu.bcontacts.ui.allcontact
 
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
+import com.manishjandu.bcontacts.data.models.Contact
+import com.manishjandu.bcontacts.databinding.FragmentAllContactBinding
 
 private const val TAG="AllContactFragment"
 
 class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
+    private val viewModel: AllContactViewModel by viewModels()
+    private lateinit var binding: FragmentAllContactBinding
+    private lateinit var allContactAdapter: AllContactAdapter
 
     override fun onStart() {
         super.onStart()
         if (!checkPermission()) {
             setPermissions()
+        } else {
+            viewModel.getContactsList(requireContext())
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding=FragmentAllContactBinding.bind(view)
+        allContactAdapter=AllContactAdapter(OnClick())
 
+        binding.floatingButton.setOnClickListener {
+            val intent=Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
+                type=ContactsContract.Contacts.CONTENT_ITEM_TYPE
+            }
+            startActivity(intent)
+        }
+
+        binding.recyclerViewAllContact.adapter=allContactAdapter
+        binding.recyclerViewAllContact.layoutManager=LinearLayoutManager(requireContext())
+
+        viewModel.contacts.observe(viewLifecycleOwner) {
+            it?.let {
+                allContactAdapter.submitList(it)
+            }
+        }
 
     }
 
 
+    inner class OnClick() : AllContactAdapter.OnClick {
+        override fun onCallClicked(contactNumber: String) {
+            val callIntent=Intent(Intent.ACTION_DIAL, Uri.parse("tel:$contactNumber"))
+            startActivity(callIntent)
+        }
+
+        override fun onMessageClicked(contactNumber: String) {
+            val callIntent=Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$contactNumber"))
+            startActivity(callIntent)
+        }
+    }
 
     private fun checkPermission(): Boolean {
         return isAllGranted(Permission.READ_CONTACTS, Permission.WRITE_CONTACTS)
@@ -39,7 +79,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         ) { result ->
 
             if (result.isAllGranted()) {
-                //Todo:
+                viewModel.getContactsList(requireContext())
             }
 
             if (result[Permission.READ_CONTACTS] == GrantResult.DENIED ||
