@@ -4,4 +4,6 @@
     <string name="contact_number">9461088546</string>
     <string name="button_call">Button for calling</string>
     <string name="button_message">button for messaging</string>
+    <string name="edit">Edit</string>
+    <string name="add_to_bcontact">Add to BContact</string>
 </resources>

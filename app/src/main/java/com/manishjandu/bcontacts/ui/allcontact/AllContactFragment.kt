@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.view.View
+import android.widget.ImageButton
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -62,8 +64,22 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         }
 
         override fun onMessageClicked(contactNumber: String) {
-            val callIntent=Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$contactNumber"))
-            startActivity(callIntent)
+            val messageIntent=Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$contactNumber"))
+            startActivity(messageIntent)
+        }
+
+        override fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton) {
+            val popupMenu=PopupMenu(requireContext(),buttonMoreOption)
+            popupMenu.menuInflater.inflate(R.menu.more_options_menu, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.button_add_to_b_contact -> {
+                        //Todo:Add to favourite
+                    }
+                }
+                true
+            }
+            popupMenu.show()
         }
     }
 

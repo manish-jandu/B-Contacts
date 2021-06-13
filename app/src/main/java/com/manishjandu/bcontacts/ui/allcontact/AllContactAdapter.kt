@@ -1,8 +1,8 @@
 package com.manishjandu.bcontacts.ui.allcontact
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +31,7 @@ class AllContactAdapter(val onClick: OnClick) :
         private val contactNumber=binding.textViewContactNumber
         private val buttonCall=binding.buttonCall
         private val buttonMessage=binding.buttonMessage
+        private val buttonMoreOption=binding.buttonMoreOption
         fun bind(item: Contact) {
             contactName.text=item.name
             contactNumber.text=item.phone
@@ -40,12 +41,16 @@ class AllContactAdapter(val onClick: OnClick) :
             buttonMessage.setOnClickListener {
                 onClick.onMessageClicked(item.phone)
             }
+            buttonMoreOption.setOnClickListener {
+                onClick.onMoreOption(item,buttonMoreOption)
+            }
         }
     }
 
     interface OnClick {
         fun onCallClicked(contactNumber: String)
         fun onMessageClicked(contactNumber: String)
+        fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton)
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<Contact>() {
