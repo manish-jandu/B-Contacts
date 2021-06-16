@@ -14,10 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
-import com.manishjandu.bcontacts.data.models.Contact
+import com.manishjandu.bcontacts.data.local.SavedContact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
-import com.manishjandu.bcontacts.ui.fragments.allcontact.AllContactAdapter
 
 private const val TAG="BContactFragment"
 
@@ -39,7 +38,7 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         super.onViewCreated(view, savedInstanceState)
         binding=FragmentBContactBinding.bind(view)
 
-        bContactAdapter=BContactAdapter()
+        bContactAdapter=BContactAdapter(OnClick())
 
         binding.recyclerViewBContact.adapter=bContactAdapter
         binding.recyclerViewBContact.layoutManager=LinearLayoutManager(requireContext())
@@ -50,7 +49,7 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         }
     }
 
-    inner class OnClick : AllContactAdapter.OnClick {
+    inner class OnClick : BContactAdapter.OnClick {
         override fun onCallClicked(contactNumber: String) {
             val callIntent=Intent(Intent.ACTION_DIAL, Uri.parse("tel:$contactNumber"))
             startActivity(callIntent)
@@ -61,18 +60,18 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             startActivity(messageIntent)
         }
 
-        override fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton) {
+        override fun onMoreOptionClicked(
+            savedContact: SavedContact,
+            buttonMoreOption: ImageButton
+        ) {
             val popupMenu=PopupMenu(requireContext(), buttonMoreOption)
-            popupMenu.menuInflater.inflate(R.menu.more_options_menu, popupMenu.menu)
+            popupMenu.menuInflater.inflate(R.menu.more_options_menu_b_contact, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
-                    R.id.button_add_to_b_contact -> {
-                        //Todo:Add to favourite
-
-                        viewModel.addContactLocally(contact)
-
-                        //Todo:if already exist then remove it from favourite
-                    }
+                    R.id.button_remove_from_b_contact ->{
+                        viewModel.removeContactLocally(savedContact)
+                        //Todo:refresh the layout
+                     }
                 }
                 true
             }

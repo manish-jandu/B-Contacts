@@ -17,4 +17,8 @@ class ContactsRepository(private val savedContactDao: SavedContactDao) {
         return savedContactDao.getAllSavedContact()
     }
 
+    suspend fun removeContactFromSavedContact(savedContact:SavedContact) {
+        savedContactDao.deleteContact(savedContact)
+    }
+
 }

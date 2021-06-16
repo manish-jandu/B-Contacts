@@ -106,6 +106,10 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    fun removeContactLocally(savedContact: SavedContact) = viewModelScope.launch {
+        repo.removeContactFromSavedContact(savedContact)
+    }
+
 }
 
 

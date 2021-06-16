@@ -71,7 +71,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
 
         override fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton) {
             val popupMenu=PopupMenu(requireContext(), buttonMoreOption)
-            popupMenu.menuInflater.inflate(R.menu.more_options_menu, popupMenu.menu)
+            popupMenu.menuInflater.inflate(R.menu.more_options_menu_all_contact, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.button_add_to_b_contact -> {
@@ -79,8 +79,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
 
                         viewModel.addContactLocally(contact)
 
-                        //Todo:if already exist then remove it from favourite
-                    }
+                     }
                 }
                 true
             }

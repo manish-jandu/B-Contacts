@@ -6,4 +6,5 @@
         android:id="@+id/button_add_to_b_contact"
         android:title="@string/add_to_bcontact"
         app:showAsAction="never" />
+
 </menu>

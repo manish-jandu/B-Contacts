@@ -11,7 +11,7 @@ import com.manishjandu.bcontacts.databinding.ItemContactBinding
 
 private const val TAG="AllContactAdapter"
 
-class AllContactAdapter(val onClick: OnClick) :
+class AllContactAdapter(private val onClick: OnClick) :
     ListAdapter<Contact, AllContactAdapter.AllContactViewHolder>(DiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AllContactViewHolder {
