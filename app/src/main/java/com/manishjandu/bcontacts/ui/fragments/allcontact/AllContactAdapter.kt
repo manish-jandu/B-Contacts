@@ -1,4 +1,4 @@
-package com.manishjandu.bcontacts.ui.allcontact
+package com.manishjandu.bcontacts.ui.fragments.allcontact
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

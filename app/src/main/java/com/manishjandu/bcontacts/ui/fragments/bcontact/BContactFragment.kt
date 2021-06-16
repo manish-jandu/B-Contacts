@@ -1,63 +1,56 @@
-package com.manishjandu.bcontacts.ui.allcontact
+package com.manishjandu.bcontacts.ui.fragments.bcontact
 
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
-import com.manishjandu.bcontacts.databinding.FragmentAllContactBinding
+import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
+import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
+import com.manishjandu.bcontacts.ui.fragments.allcontact.AllContactAdapter
 
-private const val TAG="AllContactFragment"
+private const val TAG="BContactFragment"
 
-class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
-    private val viewModel: AllContactViewModel by viewModels()
-    private lateinit var binding: FragmentAllContactBinding
-    private lateinit var allContactAdapter: AllContactAdapter
+class BContactFragment : Fragment(R.layout.fragment_b_contact) {
+    private val viewModel: SharedViewModel by activityViewModels()
+    private lateinit var binding: FragmentBContactBinding
+    private lateinit var bContactAdapter: BContactAdapter
 
     override fun onStart() {
         super.onStart()
         if (!checkPermission()) {
             setPermissions()
         } else {
-            viewModel.getContactsList(requireContext())
+            viewModel.getContactLocally()
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding=FragmentAllContactBinding.bind(view)
-        allContactAdapter=AllContactAdapter(OnClick())
+        binding=FragmentBContactBinding.bind(view)
 
-        binding.floatingButton.setOnClickListener {
-            val intent=Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
-                type=ContactsContract.Contacts.CONTENT_ITEM_TYPE
-            }
-            startActivity(intent)
+        bContactAdapter=BContactAdapter()
+
+        binding.recyclerViewBContact.adapter=bContactAdapter
+        binding.recyclerViewBContact.layoutManager=LinearLayoutManager(requireContext())
+
+
+        viewModel.bContacts.observe(viewLifecycleOwner) {
+            bContactAdapter.submitList(it)
         }
-
-        binding.recyclerViewAllContact.adapter=allContactAdapter
-        binding.recyclerViewAllContact.layoutManager=LinearLayoutManager(requireContext())
-
-        viewModel.contacts.observe(viewLifecycleOwner) {
-            it?.let {
-                allContactAdapter.submitList(it)
-            }
-        }
-
     }
 
-
-    inner class OnClick() : AllContactAdapter.OnClick {
+    inner class OnClick : AllContactAdapter.OnClick {
         override fun onCallClicked(contactNumber: String) {
             val callIntent=Intent(Intent.ACTION_DIAL, Uri.parse("tel:$contactNumber"))
             startActivity(callIntent)
@@ -69,12 +62,16 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         }
 
         override fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton) {
-            val popupMenu=PopupMenu(requireContext(),buttonMoreOption)
+            val popupMenu=PopupMenu(requireContext(), buttonMoreOption)
             popupMenu.menuInflater.inflate(R.menu.more_options_menu, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.button_add_to_b_contact -> {
                         //Todo:Add to favourite
+
+                        viewModel.addContactLocally(contact)
+
+                        //Todo:if already exist then remove it from favourite
                     }
                 }
                 true
@@ -95,7 +92,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         ) { result ->
 
             if (result.isAllGranted()) {
-                viewModel.getContactsList(requireContext())
+                viewModel.getContactLocally()
             }
 
             if (result[Permission.READ_CONTACTS] == GrantResult.DENIED ||
@@ -128,5 +125,4 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
             }.setActionTextColor(Color.RED)
             .show()
     }
-
 }

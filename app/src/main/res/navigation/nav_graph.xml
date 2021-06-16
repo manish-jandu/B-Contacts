@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/BContactFragment"
-        android:name="com.manishjandu.bcontacts.ui.bcontact.BContactFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.bcontact.BContactFragment"
         android:label="fragment_b_contact"
         tools:layout="@layout/fragment_b_contact" />
     <fragment
         android:id="@+id/AllContactFragment"
-        android:name="com.manishjandu.bcontacts.ui.allcontact.AllContactFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.allcontact.AllContactFragment"
         android:label="fragment_all_contact"
         tools:layout="@layout/fragment_all_contact" />
 </navigation>
