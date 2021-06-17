@@ -9,6 +9,7 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
@@ -17,6 +18,7 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.local.SavedContact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
+import kotlinx.coroutines.flow.collect
 
 private const val TAG="BContactFragment"
 
@@ -37,11 +39,12 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding=FragmentBContactBinding.bind(view)
+        val recyclerViewBContact=binding.recyclerViewBContact
 
         bContactAdapter=BContactAdapter(OnClick())
 
-        binding.recyclerViewBContact.adapter=bContactAdapter
-        binding.recyclerViewBContact.layoutManager=LinearLayoutManager(requireContext())
+        recyclerViewBContact.adapter=bContactAdapter
+        recyclerViewBContact.layoutManager=LinearLayoutManager(requireContext())
 
 
         viewModel.bContacts.observe(viewLifecycleOwner) {
@@ -68,10 +71,10 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             popupMenu.menuInflater.inflate(R.menu.more_options_menu_b_contact, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
-                    R.id.button_remove_from_b_contact ->{
+                    R.id.button_remove_from_b_contact -> {
                         viewModel.removeContactLocally(savedContact)
                         //Todo:refresh the layout
-                     }
+                    }
                 }
                 true
             }

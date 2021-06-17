@@ -14,6 +14,8 @@ import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.LocalDatabase
 import com.manishjandu.bcontacts.data.local.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class SharedViewModel(app: Application) : AndroidViewModel(app) {
@@ -101,13 +103,12 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getContactLocally()=viewModelScope.launch {
         val result=repo.getContactsFromSavedContact()
-        if (!result.isNullOrEmpty()) {
-            _bContacts.postValue(result)
-        }
+        _bContacts.postValue(result)
     }
 
-    fun removeContactLocally(savedContact: SavedContact) = viewModelScope.launch {
+    fun removeContactLocally(savedContact: SavedContact)=viewModelScope.launch {
         repo.removeContactFromSavedContact(savedContact)
+        getContactLocally()
     }
 
 }
