@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.manishjandu.bcontacts.data.local.entities.Notes
+ import com.manishjandu.bcontacts.data.local.entities.SavedContact
 
-@Database(entities=[SavedContact::class], version=1)
+@Database(entities=[SavedContact::class, Notes::class], version=1)
 abstract class LocalDatabase : RoomDatabase() {
-    abstract fun savedContactDao(): SavedContactDao
+    abstract fun contactDao(): ContactDao
+
 
     companion object {
 
@@ -17,7 +20,7 @@ abstract class LocalDatabase : RoomDatabase() {
         fun getSavedContactDatabase(context: Context): LocalDatabase {
             synchronized(this) {
                 if (savedContactInstance == null) {
-                    savedContactInstance = createSavedContactInstance(context)
+                    savedContactInstance=createSavedContactInstance(context)
                 }
                 return savedContactInstance!!
             }

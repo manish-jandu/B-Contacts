@@ -1,14 +1,13 @@
-package com.manishjandu.bcontacts.data.local
+package com.manishjandu.bcontacts.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "saved_contact_table")
 data class SavedContact(
+    @PrimaryKey(autoGenerate=false)
     val contactId: Long,
+
     val name: String?=null,
     val phone: String,
-
-    @PrimaryKey(autoGenerate=true)
-    val id: Int=0
-)
+ )

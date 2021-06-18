@@ -12,10 +12,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.LocalDatabase
-import com.manishjandu.bcontacts.data.local.SavedContact
+import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class SharedViewModel(app: Application) : AndroidViewModel(app) {
@@ -25,9 +23,9 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     private val _bContacts=MutableLiveData<List<SavedContact>>()
     val bContacts: LiveData<List<SavedContact>> = _bContacts
 
-    private val savedContactDao=
-        LocalDatabase.getSavedContactDatabase(app.applicationContext).savedContactDao()
-    private val repo=ContactsRepository(savedContactDao)
+    private val contactDao=
+        LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
+    private val repo=ContactsRepository(contactDao)
 
     fun getContactsList(context: Context) {
         val contactList=arrayListOf<Contact>()

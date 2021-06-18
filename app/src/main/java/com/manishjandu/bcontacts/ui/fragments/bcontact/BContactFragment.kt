@@ -9,16 +9,14 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
-import com.manishjandu.bcontacts.data.local.SavedContact
+import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
-import kotlinx.coroutines.flow.collect
 
 private const val TAG="BContactFragment"
 

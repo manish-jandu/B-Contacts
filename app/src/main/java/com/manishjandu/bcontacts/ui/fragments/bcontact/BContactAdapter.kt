@@ -7,7 +7,7 @@ import android.widget.ImageButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.manishjandu.bcontacts.data.local.SavedContact
+import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.databinding.ItemContactBinding
 
 private const val TAG="AllContactAdapter"
