@@ -9,8 +9,7 @@ import android.widget.ImageButton
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.observe
-import androidx.recyclerview.widget.LinearLayoutManager
+ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
@@ -71,7 +70,12 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
                 when (item.itemId) {
                     R.id.button_remove_from_b_contact -> {
                         viewModel.removeContactLocally(savedContact)
-                        //Todo:refresh the layout
+                     }
+                    R.id.button_notes ->{
+                        //Todo:Notes page
+                    }
+                    R.id.button_future_messages ->{
+                        //Todo:Future messages
                     }
                 }
                 true

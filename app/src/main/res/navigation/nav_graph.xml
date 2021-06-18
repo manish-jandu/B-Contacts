@@ -9,10 +9,28 @@
         android:id="@+id/BContactFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.bcontact.BContactFragment"
         android:label="fragment_b_contact"
-        tools:layout="@layout/fragment_b_contact" />
+        tools:layout="@layout/fragment_b_contact" >
+        <action
+            android:id="@+id/action_BContactFragment_to_notesFragment"
+            app:destination="@id/notesFragment" />
+    </fragment>
     <fragment
         android:id="@+id/AllContactFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.allcontact.AllContactFragment"
         android:label="fragment_all_contact"
         tools:layout="@layout/fragment_all_contact" />
+    <fragment
+        android:id="@+id/notesFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.notes.NotesFragment"
+        android:label="fragment_notes"
+        tools:layout="@layout/fragment_notes" >
+        <action
+            android:id="@+id/action_notesFragment_to_addEditNoteFragment"
+            app:destination="@id/addEditNoteFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditNoteFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.addEditNote.AddEditNoteFragment"
+        android:label="fragment_add_edit_note"
+        tools:layout="@layout/fragment_add_edit_note" />
 </navigation>

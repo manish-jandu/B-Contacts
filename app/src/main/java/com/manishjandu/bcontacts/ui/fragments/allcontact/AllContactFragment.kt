@@ -39,7 +39,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         binding=FragmentAllContactBinding.bind(view)
         allContactAdapter=AllContactAdapter(OnClick())
 
-        binding.floatingButton.setOnClickListener {
+        binding.floatingButtonAddEditContact.setOnClickListener {
             val intent=Intent(Intent.ACTION_INSERT_OR_EDIT).apply {
                 type=ContactsContract.Contacts.CONTENT_ITEM_TYPE
             }

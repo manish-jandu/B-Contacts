@@ -5,4 +5,13 @@
         android:id="@+id/button_remove_from_b_contact"
         android:title="@string/remove_from_bcontact"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/button_notes"
+        android:title="@string/notes"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/button_future_messages"
+        android:title="@string/future_messages"
+        app:showAsAction="never"/>
+
 </menu>
