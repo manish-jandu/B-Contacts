@@ -2,16 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/BContactFragment"
-        android:title="B Contact"
         android:enabled="true"
         android:icon="@drawable/ic_b_contact"
-        android:menuCategory="secondary"
-        />
+        android:title="B Contact" />
     <item
         android:id="@+id/AllContactFragment"
-        android:title="All Contact"
         android:enabled="true"
-        android:menuCategory="secondary"
         android:icon="@drawable/ic_all_contact"
-        />
+        android:title="All Contact" />
 </menu>
