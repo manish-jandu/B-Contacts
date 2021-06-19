@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.LocalDatabase
+import com.manishjandu.bcontacts.data.local.entities.Notes
 import com.manishjandu.bcontacts.data.local.entities.SavedContactWithNotes
 import kotlinx.coroutines.launch
 
@@ -22,6 +23,12 @@ class NotesViewModel(app: Application) : AndroidViewModel(app) {
     fun getNotes(contactId: Long)=viewModelScope.launch {
         val result=repo.getNotes(contactId)
         _notes.postValue(result)
+    }
+
+    fun removeNote(note: Notes)=viewModelScope.launch{
+        repo.removeNote(note)
+        getNotes(note.contactId)
+        //Todo:show undo delete message
     }
 
 }

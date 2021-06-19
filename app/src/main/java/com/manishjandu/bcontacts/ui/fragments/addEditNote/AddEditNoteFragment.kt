@@ -21,16 +21,24 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val contactId = arguments.contactId
+        val notesId:Int = arguments.notesId
+
+        viewModel.getNote(notesId)
+
         binding=FragmentAddEditNoteBinding.bind(view)
         val noteTitle = binding.editTextNoteTitle
         val noteDescription = binding.editTextNoteDescription
 
-        val contactId = arguments.contactId
+        viewModel.note.observe(viewLifecycleOwner){
+            noteTitle.setText(it.title)
+            noteDescription.setText(it.note)
+        }
 
         binding.buttonSaveNote.setOnClickListener {
             val title = noteTitle.text.toString()
             val description = noteDescription.text.toString()
-            viewModel.addNote(contactId,title,description)
+            viewModel.addNote(contactId,title,description,notesId)
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {

@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.manishjandu.bcontacts.data.local.entities.Notes
- import com.manishjandu.bcontacts.databinding.ItemNoteBinding
+import com.manishjandu.bcontacts.databinding.ItemNoteBinding
 
-class NotesAdapter :
+class NotesAdapter(private val onClick: OnClick) :
     ListAdapter<Notes, NotesAdapter.NotesViewHolder>(DiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NotesViewHolder {
@@ -22,13 +22,27 @@ class NotesAdapter :
     }
 
     inner class NotesViewHolder(binding: ItemNoteBinding) : RecyclerView.ViewHolder(binding.root) {
-        val textViewNoteTitle=binding.textViewNoteTitle
-        val textViewNoteDescription=binding.textViewNoteDescription
+        private val textViewNoteTitle=binding.textViewNoteTitle
+        private val textViewNoteDescription=binding.textViewNoteDescription
+
+        init {
+            binding.root.setOnClickListener {
+                val position=adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item=getItem(position)
+                    onClick.onRootClick(item.contactId, item.notesId)
+                }
+            }
+        }
 
         fun bind(item: Notes) {
-            textViewNoteTitle.text = item.title
-            textViewNoteDescription.text = item.note
+            textViewNoteTitle.text=item.title
+            textViewNoteDescription.text=item.note
         }
+    }
+
+    interface OnClick {
+        fun onRootClick(contactId: Long, noteId: Int)
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<Notes>() {
@@ -37,7 +51,6 @@ class NotesAdapter :
             newItem: Notes
         ): Boolean {
             return oldItem == newItem
-
         }
 
         override fun areContentsTheSame(

@@ -39,5 +39,8 @@
         <argument
             android:name="contactId"
             app:argType="long" />
+        <argument
+            android:name="notesId"
+            app:argType="integer" />
     </fragment>
 </navigation>

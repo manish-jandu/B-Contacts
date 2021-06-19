@@ -27,6 +27,10 @@ class ContactsRepository(private val contactDao: ContactDao) {
         contactDao.insertNote(note)
     }
 
+    suspend fun getNote(notesId:Int): Notes {
+        return contactDao.getNote(notesId)
+    }
+
     suspend fun removeNote(note: Notes) {
         contactDao.deleteNote(note)
     }
