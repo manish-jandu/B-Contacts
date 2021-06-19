@@ -25,4 +25,9 @@ interface ContactDao {
     @Transaction
     @Query("SELECT * FROM saved_contact_table where contactId =:contactId ")
     suspend fun getNotesWithSavedContact(contactId: Long): SavedContactWithNotes
+
+    @Transaction
+    @Query("DELETE FROM notes_table WHERE contactId =:contactId  ")
+    suspend fun deleteNotesWithSavedContact(contactId: Long)
+
 }

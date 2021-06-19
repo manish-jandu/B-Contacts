@@ -16,6 +16,7 @@ import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
 import kotlinx.coroutines.launch
 
+private const val TAG="SharedViewModel"
 class SharedViewModel(app: Application) : AndroidViewModel(app) {
     private val _contacts=MutableLiveData<List<Contact>>()
     val contacts: LiveData<List<Contact>> = _contacts
@@ -105,6 +106,7 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun removeContactLocally(savedContact: SavedContact)=viewModelScope.launch {
+        repo.removeAllNoteWithContact(savedContact.contactId)
         repo.removeContactFromSavedContact(savedContact)
         getContactLocally()
     }
