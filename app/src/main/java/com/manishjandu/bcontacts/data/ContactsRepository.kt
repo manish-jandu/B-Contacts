@@ -31,7 +31,7 @@ class ContactsRepository(private val contactDao: ContactDao) {
         contactDao.deleteNote(note)
     }
 
-    suspend fun getNotes(contactId: Long): List<SavedContactWithNotes> {
+    suspend fun getNotes(contactId: Long): SavedContactWithNotes {
         return contactDao.getNotesWithSavedContact(contactId)
     }
 }

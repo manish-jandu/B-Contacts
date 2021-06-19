@@ -5,11 +5,13 @@
         android:title="B Contact"
         android:enabled="true"
         android:icon="@drawable/ic_b_contact"
+        android:menuCategory="secondary"
         />
     <item
         android:id="@+id/AllContactFragment"
         android:title="All Contact"
         android:enabled="true"
+        android:menuCategory="secondary"
         android:icon="@drawable/ic_all_contact"
         />
 </menu>

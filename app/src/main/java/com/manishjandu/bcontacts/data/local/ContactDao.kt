@@ -16,7 +16,7 @@ interface ContactDao {
     @Delete
     suspend fun deleteContact(savedContact: SavedContact)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict=OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: Notes)
 
     @Delete
@@ -24,5 +24,5 @@ interface ContactDao {
 
     @Transaction
     @Query("SELECT * FROM saved_contact_table where contactId =:contactId ")
-    suspend fun getNotesWithSavedContact(contactId:Long):List<SavedContactWithNotes>
+    suspend fun getNotesWithSavedContact(contactId: Long): SavedContactWithNotes
 }
