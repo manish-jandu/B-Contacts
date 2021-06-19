@@ -4,15 +4,19 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentAddEditNoteBinding
+import kotlinx.coroutines.flow.collect
 
 
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     private val viewModel: AddEditNoteViewModel by viewModels()
     private lateinit var binding: FragmentAddEditNoteBinding
-    private val arguments:AddEditNoteFragmentArgs by navArgs()
+    private val arguments: AddEditNoteFragmentArgs by navArgs()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -27,6 +31,24 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             val title = noteTitle.text.toString()
             val description = noteDescription.text.toString()
             viewModel.addNote(contactId,title,description)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.addEditNoteEvent.collect { event ->
+                when (event) {
+                    is AddEditNoteViewModel.AddEditNoteEvent.NoteAddingSuccessful -> {
+                        findNavController().popBackStack()
+                    }
+                    is AddEditNoteViewModel.AddEditNoteEvent.NoteAddingNotSuccessful -> {
+                        Snackbar.make(
+                            requireView(),
+                            "Don't Leave anything blanck",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+
+                }
+            }
         }
 
     }
