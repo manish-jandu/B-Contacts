@@ -1,16 +1,20 @@
 package com.manishjandu.bcontacts.ui.fragments.notes
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentNotesBinding
+import kotlinx.coroutines.flow.collect
 
 class NotesFragment : Fragment(R.layout.fragment_notes) {
     private val viewModel: NotesViewModel by viewModels()
@@ -53,6 +57,21 @@ class NotesFragment : Fragment(R.layout.fragment_notes) {
 
         viewModel.notes.observe(viewLifecycleOwner) {
             notesAdapter.submitList(it.notes)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.notesEvent.collect { event ->
+                when (event) {
+                    is NotesViewModel.NotesEvent.showUndoDeleteNoteMessage -> {
+                        Snackbar.make(requireView(), "Note deleted", Snackbar.LENGTH_LONG)
+                            .setAction("Undo"){
+                                viewModel.addNote(event.note)
+                            }
+                            .setActionTextColor(Color.RED)
+                            .show()
+                    }
+                }
+            }
         }
 
     }
