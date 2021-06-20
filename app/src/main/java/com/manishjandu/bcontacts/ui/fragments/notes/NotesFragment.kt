@@ -52,7 +52,7 @@ class NotesFragment : Fragment(R.layout.fragment_notes) {
 
 
         binding.floatingButtonAddNote.setOnClickListener {
-            navigateToAddEditNoteFragment(contactId, 0)
+            navigateToAddEditNoteFragment(contactId, 0) //id 0 to show its a new note
         }
 
         viewModel.notes.observe(viewLifecycleOwner) {

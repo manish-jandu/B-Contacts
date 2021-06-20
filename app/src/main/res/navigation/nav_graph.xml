@@ -72,5 +72,8 @@
         <argument
             android:name="phone"
             app:argType="string" />
+        <argument
+            android:name="messageId"
+            app:argType="integer" />
     </fragment>
 </navigation>

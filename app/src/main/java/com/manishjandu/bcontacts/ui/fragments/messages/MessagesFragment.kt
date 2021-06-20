@@ -22,7 +22,8 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
         binding.floatingButtonAddMessage.setOnClickListener {
             val action=MessagesFragmentDirections.actionMessagesFragmentToAddEditMessageFragment(
                 contactId,
-                contactNumber
+                contactNumber,
+                0 //to show its a new message
             )
             findNavController().navigate(action)
         }
