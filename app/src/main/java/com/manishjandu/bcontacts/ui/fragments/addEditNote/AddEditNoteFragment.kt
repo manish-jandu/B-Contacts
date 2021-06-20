@@ -1,7 +1,9 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditNote
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -36,9 +38,10 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
         }
 
         binding.buttonSaveNote.setOnClickListener {
-            val title = noteTitle.text.toString()
-            val description = noteDescription.text.toString()
-            viewModel.addNote(contactId,title,description,notesId)
+            val title=noteTitle.text.toString()
+            val description=noteDescription.text.toString()
+            hideKeyboard()
+            viewModel.addNote(contactId, title, description, notesId)
         }
 
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
@@ -59,6 +62,12 @@ class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
             }
         }
 
+    }
+
+    private fun hideKeyboard() {
+        val inputMethodManager=
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(requireView().windowToken, 0)
     }
 
 }
