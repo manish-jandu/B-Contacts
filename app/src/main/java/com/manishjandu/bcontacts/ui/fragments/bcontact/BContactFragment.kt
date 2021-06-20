@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -70,7 +71,7 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.button_remove_from_b_contact -> {
-                        viewModel.removeContactLocally(savedContact)
+                        alertDialog(savedContact)
                     }
                     R.id.button_notes -> {
                         val action=BContactFragmentDirections.actionBContactFragmentToNotesFragment(
@@ -86,6 +87,20 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             }
             popupMenu.show()
         }
+    }
+
+    private fun alertDialog(savedContact: SavedContact) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Alert!")
+            .setMessage("Do you really want to delete this contact, as it will also delete notes and messages related to it?")
+            .setPositiveButton("Delete") { _, _ ->
+                viewModel.removeContactLocally(savedContact)
+            }
+            .setNegativeButton("No"){_,_ ->
+
+            }
+            .create()
+            .show()
     }
 
     private fun checkPermission(): Boolean {
