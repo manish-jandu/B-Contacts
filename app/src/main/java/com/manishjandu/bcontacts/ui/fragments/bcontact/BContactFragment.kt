@@ -80,7 +80,10 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
                         findNavController().navigate(action)
                     }
                     R.id.button_future_messages -> {
-                        //Todo:Future messages
+                        val action = BContactFragmentDirections.actionBContactFragmentToMessagesFragment(
+                            savedContact.contactId,savedContact.phone
+                        )
+                        findNavController().navigate(action)
                     }
                 }
                 true

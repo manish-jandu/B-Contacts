@@ -10,4 +10,10 @@
     <string name="notes">Notes</string>
     <string name="future_messages">Future Messages</string>
     <string name="floating_button_to_add_note">floating button to add note</string>
+    <string name="this_is_a_message">"this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message this is a message "</string>
+    <string name="on">On: </string>
+    <string name="message_time">08:12 PM 13 April,2021</string>
+    <string name="save">Save</string>
+    <string name="message">Message</string>
+    <string name="floating_button_to_add_message">floating button to add message</string>
 </resources>

@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_BContactFragment_to_notesFragment"
             app:destination="@id/notesFragment" />
+        <action
+            android:id="@+id/action_BContactFragment_to_messagesFragment"
+            app:destination="@id/messagesFragment" />
     </fragment>
     <fragment
         android:id="@+id/AllContactFragment"
@@ -34,7 +37,7 @@
     <fragment
         android:id="@+id/addEditNoteFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.addEditNote.AddEditNoteFragment"
-        android:label="fragment_add_edit_note"
+        android:label="Add Note"
         tools:layout="@layout/fragment_add_edit_note">
         <argument
             android:name="contactId"
@@ -42,5 +45,32 @@
         <argument
             android:name="notesId"
             app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/messagesFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.messages.MessagesFragment"
+        android:label="Messages"
+        tools:layout="@layout/fragment_messages" >
+        <argument
+            android:name="contactId"
+            app:argType="long" />
+        <argument
+            android:name="phone"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_messagesFragment_to_addEditMessageFragment"
+            app:destination="@id/addEditMessageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditMessageFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.addEditMessage.AddEditMessageFragment"
+        android:label="Add Message"
+        tools:layout="@layout/fragment_add_edit_message" >
+        <argument
+            android:name="contactId"
+            app:argType="long" />
+        <argument
+            android:name="phone"
+            app:argType="string" />
     </fragment>
 </navigation>
