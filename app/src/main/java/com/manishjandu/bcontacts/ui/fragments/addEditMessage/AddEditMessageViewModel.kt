@@ -79,7 +79,7 @@ class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
             timeInMillis,
             pendingIntent
         )
-        Toast.makeText(app.applicationContext, "Alarm is set", Toast.LENGTH_SHORT).show()
+        Toast.makeText(app.applicationContext, "Message is set", Toast.LENGTH_SHORT).show()
     }
 
     private fun cancelAlarm(requestCode: Int) {

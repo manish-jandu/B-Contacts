@@ -83,6 +83,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
                             .setAction("Undo") {
                                 viewModel.addDeletedMessage(event.message)
                             }.setActionTextColor(Color.RED)
+                            .show()
                     }
                 }
 
