@@ -20,7 +20,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
     private val viewModel: MessagesViewModel by viewModels()
     private lateinit var binding: FragmentMessagesBinding
     private lateinit var floatingButtonAddMessage: FloatingActionButton
-    private val messageAdapter = MessagesAdapter()
+    private val messageAdapter = MessagesAdapter(OnMessageClick())
     private val arguments: MessagesFragmentArgs by navArgs()
     private var contactId: Long?=null
 
@@ -66,16 +66,27 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
         }
 
         floatingButtonAddMessage.setOnClickListener {
-            val action=MessagesFragmentDirections.actionMessagesFragmentToAddEditMessageFragment(
-                contactId!!, contactNumber, 0 //to show its a new message
-            )
-            findNavController().navigate(action)
+            navigateToAddEditMessage(contactId!!,contactNumber,0)
         }
 
         viewModel.messages.observe(viewLifecycleOwner){
             messageAdapter.submitList(it.messages)
         }
 
+    }
+
+    inner class OnMessageClick : MessagesAdapter.OnMessageClick{
+        override fun onRootClick(messageId: Int, contactId: Long, contactNumber: String) {
+            navigateToAddEditMessage(contactId,contactNumber,messageId)
+        }
+
+    }
+
+    private fun navigateToAddEditMessage(contactId: Long,contactNumber: String,messageId: Int){
+        val action=MessagesFragmentDirections.actionMessagesFragmentToAddEditMessageFragment(
+            contactId, contactNumber, messageId
+        )
+        findNavController().navigate(action)
     }
 
     private fun checkSmsPermission(): Boolean {

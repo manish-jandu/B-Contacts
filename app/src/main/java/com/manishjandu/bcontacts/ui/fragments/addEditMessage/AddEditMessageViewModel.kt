@@ -7,14 +7,20 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.LocalDatabase
 import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.utils.FutureMessage
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
+    private val _message = MutableLiveData<Message>()
+    val message:LiveData<Message> = _message
 
     private val contactDao=
         LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
@@ -23,6 +29,9 @@ class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
     private val alarmManager=
         app.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val intent=Intent(app.applicationContext, FutureMessage::class.java)
+
+    private val addEditMessageChannel = Channel<AddEditMessageEvent>()
+    val addEditMessageEvent = addEditMessageChannel.receiveAsFlow()
 
     fun setFutureMessage(
         minutes: Int, hour: Int, day: Int, month: Int, year: Int, timeInMillis: Long,
@@ -51,7 +60,7 @@ class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
             cancelAlarm(messageId)
             setAlarm(timeInMillis, messageId, message, contactNumber)
         }
-
+        addEditMessageChannel.send(AddEditMessageEvent.MessageAddingSuccessful)
     }
 
 
@@ -78,4 +87,12 @@ class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
         alarmManager.cancel(pendingIntent)
     }
 
+    fun getMessage(messageId: Int) =viewModelScope.launch{
+        val result = repo.getMessage(messageId)
+        _message.postValue(result)
+    }
+
+    sealed class AddEditMessageEvent {
+        object MessageAddingSuccessful : AddEditMessageEvent()
+    }
 }

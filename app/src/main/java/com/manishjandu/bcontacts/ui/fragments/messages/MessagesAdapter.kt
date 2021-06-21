@@ -6,9 +6,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.manishjandu.bcontacts.data.local.entities.Message
- import com.manishjandu.bcontacts.databinding.ItemMessageBinding
+import com.manishjandu.bcontacts.databinding.ItemMessageBinding
 
-class MessagesAdapter :
+class MessagesAdapter(val onMessageClick: OnMessageClick) :
     ListAdapter<Message, MessagesAdapter.MessagesViewHolder>(DiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessagesViewHolder {
@@ -26,6 +26,16 @@ class MessagesAdapter :
         private val textViewMessage=binding.textViewMessage
         private val textViewMessageTime=binding.textViewMessageTime
 
+        init {
+            binding.root.setOnClickListener {
+                val position=adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    val item=getItem(position)
+                    onMessageClick.onRootClick(item.messageId,item.contactId,item.phone)
+                }
+            }
+        }
+
         fun bind(item: Message) {
             textViewMessage.text=item.message
 
@@ -34,8 +44,11 @@ class MessagesAdapter :
         }
     }
 
+    interface OnMessageClick {
+        fun onRootClick(messageId: Int, contactId: Long, contactNumber: String)
+    }
 
-     class DiffUtilCallback : DiffUtil.ItemCallback<Message>() {
+    class DiffUtilCallback : DiffUtil.ItemCallback<Message>() {
         override fun areItemsTheSame(
             oldItem: Message,
             newItem: Message

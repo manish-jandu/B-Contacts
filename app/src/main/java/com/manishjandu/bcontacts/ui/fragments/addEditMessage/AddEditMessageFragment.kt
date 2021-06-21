@@ -6,6 +6,8 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -14,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentAddEditMessageBinding
+import kotlinx.coroutines.flow.collect
 import java.util.*
 
 class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
@@ -38,6 +41,8 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
         val contactId=arguments.contactId
         val contactNumber=arguments.phone
         val messageId=arguments.messageId
+
+        viewModel.getMessage(messageId)
 
         textViewShowDate=binding.textViewShowDate
         textViewShowTime=binding.textViewShowTime
@@ -71,6 +76,24 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             }
         }
 
+        viewModel.message.observe(viewLifecycleOwner) {
+            it?.let {
+                textViewShowDate.text = getDateInString(it.day,it.month,it.year)
+                textViewShowTime.text = getTimeInAmPm(it.hour,it.minutes)
+                editTextMessage.setText(it.message)
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.addEditMessageEvent.collect { event ->
+                when (event) {
+                    is AddEditMessageViewModel.AddEditMessageEvent.MessageAddingSuccessful -> {
+                        findNavController().popBackStack()
+                    }
+                }
+            }
+        }
+
     }
 
     private fun showErrorTimeNotSelected() {
@@ -85,7 +108,6 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private fun createTimeInMills(): Long {
         calendar.set(year, month, day!!, hour, minutes!!)
         return calendar.timeInMillis
-
     }
 
     private fun showTimePicker() {
@@ -96,20 +118,8 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             minutes=String.format("%02d", timePicker.minute).toInt()
             hour=String.format("%02d", timePicker.hour).toInt()
 
-            val timeAmPm=if (timePicker.hour > 12) {
-                String.format("%02d", timePicker.hour - 12) + ":" + String.format(
-                    "%02d",
-                    timePicker.minute
-                ) + "PM"
-            } else {
-                String.format("%02d", timePicker.hour) + ":" + String.format(
-                    "%02d",
-                    timePicker.minute
-                ) + "AM"
-            }
-
-            textViewShowTime.text=timeAmPm
-
+            val timeInAmPm=getTimeInAmPm(hour, minutes!!)
+            textViewShowTime.text=timeInAmPm
         }
     }
 
@@ -130,9 +140,27 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             month=calendar.get(Calendar.MONTH)
             year=calendar.get(Calendar.YEAR)
 
-            val date="$day-$month-$year"
-            textViewShowDate.text=date
+            val dateInString = getDateInString(day!!,month,year)
+            textViewShowDate.text=dateInString
 
+        }
+    }
+
+    private fun getDateInString(day:Int, month:Int, year:Int):String{
+        return "$day-$month-$year"
+    }
+
+    private fun getTimeInAmPm(hour: Int, minute: Int): String {
+        return if (hour > 12) {
+            String.format("%02d", hour - 12 + 1) + ":" + String.format(
+                "%02d",
+                minute
+            ) + "PM"
+        } else {
+            String.format("%02d", hour + 1) + ":" + String.format(
+                "%02d",
+                minute
+            ) + "AM"
         }
     }
 
