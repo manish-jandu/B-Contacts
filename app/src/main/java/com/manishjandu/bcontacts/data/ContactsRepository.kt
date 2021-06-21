@@ -1,9 +1,7 @@
 package com.manishjandu.bcontacts.data
 
 import com.manishjandu.bcontacts.data.local.ContactDao
-import com.manishjandu.bcontacts.data.local.entities.Notes
-import com.manishjandu.bcontacts.data.local.entities.SavedContact
-import com.manishjandu.bcontacts.data.local.entities.SavedContactWithNotes
+import com.manishjandu.bcontacts.data.local.entities.*
 import com.manishjandu.bcontacts.data.models.Contact
 
 
@@ -27,7 +25,7 @@ class ContactsRepository(private val contactDao: ContactDao) {
         contactDao.insertNote(note)
     }
 
-    suspend fun getNote(notesId:Int): Notes {
+    suspend fun getNote(notesId: Int): Notes {
         return contactDao.getNote(notesId)
     }
 
@@ -39,7 +37,27 @@ class ContactsRepository(private val contactDao: ContactDao) {
         return contactDao.getNotesWithSavedContact(contactId)
     }
 
-    suspend fun removeAllNoteWithContact(contactId: Long){
+    suspend fun removeAllNoteWithContact(contactId: Long) {
         contactDao.deleteNotesWithSavedContact(contactId)
+    }
+
+    suspend fun addMessage(message: Message): Int {
+        return contactDao.insertMessage(message).toInt()
+    }
+
+    suspend fun getMessage(messageId: Int): Message {
+        return contactDao.getMessage(messageId)
+    }
+
+    suspend fun removeMessage(message: Message) {
+        contactDao.deleteMessage(message)
+    }
+
+    suspend fun getMessages(contactId: Long): SavedContactWithMessages {
+        return contactDao.getMessagesWithSavedContact(contactId)
+    }
+
+    suspend fun removeAllMessagesWithContact(contactId: Long) {
+        contactDao.deleteMessagesWithSavedContact(contactId)
     }
 }

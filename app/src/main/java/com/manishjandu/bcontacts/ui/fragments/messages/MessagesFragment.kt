@@ -4,8 +4,12 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.afollestad.assent.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -13,18 +17,21 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
 
 class MessagesFragment : Fragment(R.layout.fragment_messages) {
+    private val viewModel: MessagesViewModel by viewModels()
     private lateinit var binding: FragmentMessagesBinding
-    private lateinit var floatingButtonAddMessage:FloatingActionButton
+    private lateinit var floatingButtonAddMessage: FloatingActionButton
+    private val messageAdapter = MessagesAdapter()
     private val arguments: MessagesFragmentArgs by navArgs()
+    private var contactId: Long?=null
 
     override fun onStart() {
         super.onStart()
-        if(!checkSmsPermission()){
-            floatingButtonAddMessage.visibility = View.GONE
+        if (!checkSmsPermission()) {
+           floatingButtonAddMessage.visibility=View.GONE
             setSmsPermission()
-        }else{
-            floatingButtonAddMessage.visibility = View.VISIBLE
-            //Todo:get messages
+        } else {
+           floatingButtonAddMessage.visibility=View.VISIBLE
+            viewModel.getMessages(contactId!!)
         }
 
     }
@@ -32,19 +39,43 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding=FragmentMessagesBinding.bind(view)
-        floatingButtonAddMessage = binding.floatingButtonAddMessage
+        val recyclerView = binding.recyclerViewMessages
+        floatingButtonAddMessage=binding.floatingButtonAddMessage
 
-        val contactId=arguments.contactId
+        contactId=arguments.contactId
         val contactNumber=arguments.phone
+
+        recyclerView.adapter = messageAdapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.apply {
+            ItemTouchHelper(object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    val message=messageAdapter.currentList[viewHolder.adapterPosition]
+                    viewModel.removeNote(message)
+                }
+            }).attachToRecyclerView(recyclerViewMessages)
+        }
 
         floatingButtonAddMessage.setOnClickListener {
             val action=MessagesFragmentDirections.actionMessagesFragmentToAddEditMessageFragment(
-                contactId,
-                contactNumber,
-                0 //to show its a new message
+                contactId!!, contactNumber, 0 //to show its a new message
             )
             findNavController().navigate(action)
         }
+
+        viewModel.messages.observe(viewLifecycleOwner){
+            messageAdapter.submitList(it.messages)
+        }
+
     }
 
     private fun checkSmsPermission(): Boolean {
@@ -57,8 +88,8 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
         ) { result ->
 
             if (result.isAllGranted()) {
-                floatingButtonAddMessage.visibility = View.VISIBLE
-                //Todo:get messages
+                floatingButtonAddMessage.visibility=View.VISIBLE
+                   viewModel.getMessages(contactId!!)
             }
 
             if (result[Permission.SEND_SMS] == GrantResult.DENIED
@@ -77,6 +108,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
 
         }
     }
+
     private fun showSnackBarOnPermissionError(
         message: String,
         textAction: String,

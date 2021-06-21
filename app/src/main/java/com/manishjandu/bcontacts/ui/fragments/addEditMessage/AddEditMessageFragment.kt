@@ -22,7 +22,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private val arguments: AddEditMessageFragmentArgs by navArgs()
     private lateinit var textViewShowDate: TextView
     private lateinit var textViewShowTime: TextView
-    private lateinit var editTextMessage:EditText
+    private lateinit var editTextMessage: EditText
     private val calendar=Calendar.getInstance()
     private var minutes: Int?=null
     private var hour=0
@@ -37,7 +37,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
 
         val contactId=arguments.contactId
         val contactNumber=arguments.phone
-        val messageId = arguments.messageId
+        val messageId=arguments.messageId
 
         textViewShowDate=binding.textViewShowDate
         textViewShowTime=binding.textViewShowTime
@@ -49,16 +49,24 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
         }
 
         binding.buttonSaveMessage.setOnClickListener {
-            val message = editTextMessage.text.toString()
+            val message=editTextMessage.text.toString()
             if (minutes == null || day == null) {
                 showErrorTimeNotSelected()
-            }else if(message.isEmpty()){
+            } else if (message.isEmpty()) {
                 showErrorEmptyMessage()
-            }
-            else {
+            } else {
                 val timeInMills=createTimeInMills()
                 viewModel.setFutureMessage(
-                    minutes!!, hour, day!!, month, year, timeInMills,message, contactId, contactNumber,messageId
+                    minutes!!,
+                    hour,
+                    day!!,
+                    month,
+                    year,
+                    timeInMills,
+                    message,
+                    contactId,
+                    contactNumber,
+                    messageId,
                 )
             }
         }
@@ -68,8 +76,10 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private fun showErrorTimeNotSelected() {
         Snackbar.make(requireView(), "Please Select date and time!", Snackbar.LENGTH_LONG).show()
     }
+
     private fun showErrorEmptyMessage() {
-        Snackbar.make(requireView(), "Please write something in message box!", Snackbar.LENGTH_LONG).show()
+        Snackbar.make(requireView(), "Please write something in message box!", Snackbar.LENGTH_LONG)
+            .show()
     }
 
     private fun createTimeInMills(): Long {
@@ -117,7 +127,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             calendar.time=Date(it)
 
             day=calendar.get(Calendar.DAY_OF_MONTH)
-            month=calendar.get(Calendar.MONTH) + 1
+            month=calendar.get(Calendar.MONTH)
             year=calendar.get(Calendar.YEAR)
 
             val date="$day-$month-$year"

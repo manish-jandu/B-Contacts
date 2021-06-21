@@ -1,5 +1,6 @@
 package com.manishjandu.bcontacts.data.local.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
@@ -15,6 +16,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class Notes(
+    @ColumnInfo(index=true)
     val contactId: Long,
     val title: String,
     val note: String,

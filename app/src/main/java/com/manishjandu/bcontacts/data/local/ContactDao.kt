@@ -1,9 +1,8 @@
 package com.manishjandu.bcontacts.data.local
 
 import androidx.room.*
-import com.manishjandu.bcontacts.data.local.entities.Notes
-import com.manishjandu.bcontacts.data.local.entities.SavedContact
-import com.manishjandu.bcontacts.data.local.entities.SavedContactWithNotes
+import com.manishjandu.bcontacts.data.local.entities.*
+
 
 @Dao
 interface ContactDao {
@@ -32,5 +31,22 @@ interface ContactDao {
     @Transaction
     @Query("DELETE FROM notes_table WHERE contactId =:contactId  ")
     suspend fun deleteNotesWithSavedContact(contactId: Long)
+
+    @Insert(onConflict=OnConflictStrategy.REPLACE)
+    suspend fun insertMessage(message: Message): Long
+
+    @Delete
+    suspend fun deleteMessage(message: Message)
+
+    @Query("SELECT * FROM message_table WHERE messageId =:messageId")
+    suspend fun getMessage(messageId: Int): Message
+
+    @Transaction
+    @Query("SELECT * FROM saved_contact_table  where contactId =:contactId ")
+    suspend fun getMessagesWithSavedContact(contactId: Long): SavedContactWithMessages
+
+    @Transaction
+    @Query("DELETE FROM message_table WHERE contactId =:contactId")
+    suspend fun deleteMessagesWithSavedContact(contactId: Long)
 
 }

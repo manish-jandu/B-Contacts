@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.data.local.entities.Notes
- import com.manishjandu.bcontacts.data.local.entities.SavedContact
+import com.manishjandu.bcontacts.data.local.entities.SavedContact
 
-@Database(entities=[SavedContact::class, Notes::class], version=1)
+@Database(entities=[SavedContact::class, Notes::class, Message::class], version=1)
 abstract class LocalDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
 
