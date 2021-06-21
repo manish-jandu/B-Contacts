@@ -65,7 +65,7 @@ class NotesFragment : Fragment(R.layout.fragment_notes) {
                     is NotesViewModel.NotesEvent.showUndoDeleteNoteMessage -> {
                         Snackbar.make(requireView(), "Note deleted", Snackbar.LENGTH_LONG)
                             .setAction("Undo"){
-                                viewModel.addNote(event.note)
+                                viewModel.addDeletedNote(event.note)
                             }
                             .setActionTextColor(Color.RED)
                             .show()

@@ -35,7 +35,7 @@ class NotesViewModel(app: Application) : AndroidViewModel(app) {
         notesEventChannel.send(NotesEvent.showUndoDeleteNoteMessage(note))
     }
 
-    fun addNote(note: Notes)=viewModelScope.launch {
+    fun addDeletedNote(note: Notes)=viewModelScope.launch {
         repo.addNote(note)
         getNotes(note.contactId)
     }
