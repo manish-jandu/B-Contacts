@@ -29,27 +29,40 @@ class AddEditMessageViewModel(val app: Application) : AndroidViewModel(app) {
         message: String, contactId: Long, contactNumber: String, messageId: Int
     )=viewModelScope.launch {
         if (messageId == 0) {
-            val message = Message(
+            val newMessage=Message(
                 minutes, hour, day, month, year, timeInMillis, message, contactNumber, contactId
             )
-            val newMessageId = repo.addMessage(message)
-            setAlarm(timeInMillis, newMessageId)
+            val newMessageId=repo.addMessage(newMessage)
+            setAlarm(timeInMillis, newMessageId, message, contactNumber)
         } else {
-            val message = Message(
-                minutes, hour, day, month, year, timeInMillis, message, contactNumber, contactId,messageId
+            val oldMessage=Message(
+                minutes,
+                hour,
+                day,
+                month,
+                year,
+                timeInMillis,
+                message,
+                contactNumber,
+                contactId,
+                messageId
             )
-            repo.addMessage(message)
+            repo.addMessage(oldMessage)
             cancelAlarm(messageId)
-            setAlarm(timeInMillis, messageId)
-            // already have message id
+            setAlarm(timeInMillis, messageId, message, contactNumber)
         }
 
     }
 
 
-
-    private fun setAlarm(timeInMillis: Long, requestCode: Int) {
-        intent.putExtra("messageId", requestCode)
+    private fun setAlarm(
+        timeInMillis: Long,
+        requestCode: Int,
+        message: String,
+        contactNumber: String
+    ) {
+        intent.putExtra("message", message)
+        intent.putExtra("contactNumber", contactNumber)
         val pendingIntent=PendingIntent.getBroadcast(app.applicationContext, requestCode, intent, 0)
 
         alarmManager.set(
