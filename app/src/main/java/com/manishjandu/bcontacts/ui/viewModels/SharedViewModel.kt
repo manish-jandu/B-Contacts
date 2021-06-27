@@ -1,9 +1,12 @@
 package com.manishjandu.bcontacts.ui.viewModels
 
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.provider.ContactsContract
 import androidx.lifecycle.AndroidViewModel
@@ -14,15 +17,21 @@ import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.LocalDatabase
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
+import com.manishjandu.bcontacts.utils.FutureMessage
 import kotlinx.coroutines.launch
 
 private const val TAG="SharedViewModel"
-class SharedViewModel(app: Application) : AndroidViewModel(app) {
+
+class SharedViewModel(val app: Application) : AndroidViewModel(app) {
     private val _contacts=MutableLiveData<List<Contact>>()
     val contacts: LiveData<List<Contact>> = _contacts
 
     private val _bContacts=MutableLiveData<List<SavedContact>>()
     val bContacts: LiveData<List<SavedContact>> = _bContacts
+
+    private val alarmManager=
+        app.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val intent=Intent(app.applicationContext, FutureMessage::class.java)
 
     private val contactDao=
         LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
@@ -108,7 +117,20 @@ class SharedViewModel(app: Application) : AndroidViewModel(app) {
     fun removeContactLocally(savedContact: SavedContact)=viewModelScope.launch {
         repo.removeAllNoteWithContact(savedContact.contactId)
         repo.removeContactFromSavedContact(savedContact)
+        removeAlarms(savedContact)
         getContactLocally()
+    }
+
+    private suspend fun removeAlarms(savedContact: SavedContact){
+        val savedMessages = repo.getMessages(savedContact.contactId)
+        for(message in savedMessages.messages){
+            cancelAlarm(message.messageId)
+        }
+    }
+
+    private fun cancelAlarm(requestCode: Int) {
+        val pendingIntent=PendingIntent.getBroadcast(app.applicationContext, requestCode, intent, 0)
+        alarmManager.cancel(pendingIntent)
     }
 
 }
