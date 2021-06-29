@@ -12,9 +12,10 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentAddEditNoteBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
-
+@AndroidEntryPoint
 class AddEditNoteFragment : Fragment(R.layout.fragment_add_edit_note) {
     private val viewModel: AddEditNoteViewModel by viewModels()
     private lateinit var binding: FragmentAddEditNoteBinding

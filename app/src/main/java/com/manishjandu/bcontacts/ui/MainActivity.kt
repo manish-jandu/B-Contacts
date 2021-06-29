@@ -11,7 +11,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var _binding: ActivityMainBinding
     private lateinit var appBarConfiguration: AppBarConfiguration

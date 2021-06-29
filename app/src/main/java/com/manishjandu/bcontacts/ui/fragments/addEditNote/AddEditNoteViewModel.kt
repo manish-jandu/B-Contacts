@@ -1,24 +1,21 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditNote
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
-import com.manishjandu.bcontacts.data.local.LocalDatabase
 import com.manishjandu.bcontacts.data.local.entities.Notes
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddEditNoteViewModel(app: Application) : AndroidViewModel(app) {
+@HiltViewModel
+class AddEditNoteViewModel @Inject constructor(private val repo: ContactsRepository) : ViewModel(){
     private val _note=MutableLiveData<Notes>()
     val note: LiveData<Notes> = _note
-
-    private val contactDao=
-        LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
-    private val repo=ContactsRepository(contactDao)
 
     private val addEditNoteEventChannel=Channel<AddEditNoteEvent>()
     val addEditNoteEvent=addEditNoteEventChannel.receiveAsFlow()

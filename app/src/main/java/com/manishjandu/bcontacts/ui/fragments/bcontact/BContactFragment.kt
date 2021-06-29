@@ -1,5 +1,7 @@
 package com.manishjandu.bcontacts.ui.fragments.bcontact
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -18,13 +20,23 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import javax.inject.Named
 
 private const val TAG="BContactFragment"
 
+@AndroidEntryPoint
 class BContactFragment : Fragment(R.layout.fragment_b_contact) {
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var binding: FragmentBContactBinding
     private lateinit var bContactAdapter: BContactAdapter
+
+    @Inject
+    @Named("futureMessageIntent")
+      lateinit var intent: Intent
+    @Inject
+      lateinit var alarmManager: AlarmManager
 
     override fun onStart() {
         super.onStart()
@@ -49,6 +61,14 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         viewModel.bContacts.observe(viewLifecycleOwner) {
             bContactAdapter.submitList(it)
         }
+
+        viewModel.futureMessage.observe(viewLifecycleOwner){futureMessages->
+            for (message in futureMessages){
+                val pendingIntent=PendingIntent.getBroadcast(requireContext(), message.messageId, intent, 0)
+                alarmManager.cancel(pendingIntent)
+            }
+        }
+
     }
 
     inner class OnClick : BContactAdapter.OnClick {

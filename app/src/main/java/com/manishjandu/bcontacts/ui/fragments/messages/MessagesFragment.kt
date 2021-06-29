@@ -1,8 +1,12 @@
 package com.manishjandu.bcontacts.ui.fragments.messages
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,8 +20,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
+import javax.inject.Named
 
+@AndroidEntryPoint
 class MessagesFragment : Fragment(R.layout.fragment_messages) {
     private val viewModel: MessagesViewModel by viewModels()
     private lateinit var binding: FragmentMessagesBinding
@@ -25,6 +33,13 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
     private val messageAdapter=MessagesAdapter(OnMessageClick())
     private val arguments: MessagesFragmentArgs by navArgs()
     private var contactId: Long?=null
+
+    @Inject
+    @Named("futureMessageIntent")
+      lateinit var intent: Intent
+
+    @Inject
+      lateinit var alarmManager: AlarmManager
 
     override fun onStart() {
         super.onStart()
@@ -78,12 +93,21 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             viewModel.messageEvent.collect { event ->
                 when (event) {
-                    is MessagesViewModel.MessageEvent.showUndoMessageDelete -> {
+                    is MessagesViewModel.MessageEvent.ShowUndoMessageDelete -> {
                         Snackbar.make(requireView(), "Message Deleted", Snackbar.LENGTH_LONG)
                             .setAction("Undo") {
+                                setAlarm(
+                                    event.message.timeInMillis,
+                                    event.message.messageId,
+                                    event.message.message,
+                                    event.message.phone
+                                )
                                 viewModel.addDeletedMessage(event.message)
                             }.setActionTextColor(Color.RED)
                             .show()
+                    }
+                    is MessagesViewModel.MessageEvent.CancelAlarm -> {
+                        cancelAlarm(event.messageId)
                     }
                 }
 
@@ -97,6 +121,29 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
             navigateToAddEditMessage(contactId, contactNumber, messageId)
         }
 
+    }
+
+    private fun setAlarm(
+        timeInMillis: Long,
+        requestCode: Int,
+        message: String,
+        contactNumber: String
+    ) {
+        intent.putExtra("message", message)
+        intent.putExtra("contactNumber", contactNumber)
+        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
+
+        alarmManager.set(
+            AlarmManager.RTC,
+            timeInMillis,
+            pendingIntent
+        )
+        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun cancelAlarm(requestCode: Int) {
+        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
+        alarmManager.cancel(pendingIntent)
     }
 
     private fun navigateToAddEditMessage(contactId: Long, contactNumber: String, messageId: Int) {

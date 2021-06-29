@@ -14,8 +14,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentNotesBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
+@AndroidEntryPoint
 class NotesFragment : Fragment(R.layout.fragment_notes) {
     private val viewModel: NotesViewModel by viewModels()
     private lateinit var binding: FragmentNotesBinding

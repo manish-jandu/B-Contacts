@@ -1,9 +1,13 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditMessage
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -15,10 +19,15 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.manishjandu.bcontacts.R
+import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.databinding.FragmentAddEditMessageBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Named
 
+@AndroidEntryPoint
 class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private lateinit var binding: FragmentAddEditMessageBinding
     private val viewModel: AddEditMessageViewModel by viewModels()
@@ -33,6 +42,12 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private var month=0
     private var year=0
 
+    @Inject
+    @Named("futureMessageIntent")
+      lateinit var intent: Intent
+
+    @Inject
+    lateinit var alarmManager: AlarmManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,7 +76,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                 showErrorEmptyMessage()
             } else {
                 val timeInMills=createTimeInMills()
-                viewModel.setFutureMessage(
+                val message=Message(
                     minutes!!,
                     hour,
                     day!!,
@@ -69,17 +84,18 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                     year,
                     timeInMills,
                     message,
-                    contactId,
                     contactNumber,
-                    messageId,
+                    contactId,
+                    messageId
                 )
+                viewModel.setFutureMessage(message)
             }
         }
 
         viewModel.message.observe(viewLifecycleOwner) {
             it?.let {
-                textViewShowDate.text = getDateInString(it.day,it.month,it.year)
-                textViewShowTime.text = getTimeInAmPm(it.hour,it.minutes)
+                textViewShowDate.text=getDateInString(it.day, it.month, it.year)
+                textViewShowTime.text=getTimeInAmPm(it.hour, it.minutes)
                 editTextMessage.setText(it.message)
             }
         }
@@ -89,6 +105,17 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                 when (event) {
                     is AddEditMessageViewModel.AddEditMessageEvent.MessageAddingSuccessful -> {
                         findNavController().popBackStack()
+                    }
+                    is AddEditMessageViewModel.AddEditMessageEvent.SetAlarm -> {
+                        setAlarm(
+                            event.message.timeInMillis,
+                            event.message.messageId,
+                            event.message.message,
+                            event.message.phone
+                        )
+                    }
+                    is AddEditMessageViewModel.AddEditMessageEvent.CancelAlarm -> {
+                        cancelAlarm(event.messageId)
                     }
                 }
             }
@@ -140,13 +167,13 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             month=calendar.get(Calendar.MONTH)
             year=calendar.get(Calendar.YEAR)
 
-            val dateInString = getDateInString(day!!,month,year)
+            val dateInString=getDateInString(day!!, month, year)
             textViewShowDate.text=dateInString
 
         }
     }
 
-    private fun getDateInString(day:Int, month:Int, year:Int):String{
+    private fun getDateInString(day: Int, month: Int, year: Int): String {
         return "$day-$month-$year"
     }
 
@@ -162,6 +189,29 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                 minute
             ) + "AM"
         }
+    }
+
+    private fun setAlarm(
+        timeInMillis: Long,
+        requestCode: Int,
+        message: String,
+        contactNumber: String
+    ) {
+        intent.putExtra("message", message)
+        intent.putExtra("contactNumber", contactNumber)
+        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
+
+        alarmManager.set(
+            AlarmManager.RTC,
+            timeInMillis,
+            pendingIntent
+        )
+        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun cancelAlarm(requestCode: Int) {
+        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
+        alarmManager.cancel(pendingIntent)
     }
 
 }

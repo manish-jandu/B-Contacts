@@ -37,5 +37,5 @@ data class Message(
     val contactId: Long,
 
     @PrimaryKey(autoGenerate = true)
-    val messageId:Int = 0,
+    var messageId:Int = 0,
 )

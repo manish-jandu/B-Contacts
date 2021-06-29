@@ -3,10 +3,11 @@
     package="com.manishjandu.bcontacts">
 
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
+        android:name=".ui.BContactsApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -23,7 +24,7 @@
         <receiver
             android:name=".utils.FutureMessage"
             android:enabled="true"
-            android:exported="true"/>
+            android:exported="true" />
 
     </application>
 

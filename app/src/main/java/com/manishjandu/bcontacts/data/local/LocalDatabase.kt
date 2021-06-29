@@ -8,7 +8,7 @@ import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.data.local.entities.Notes
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 
-@Database(entities=[SavedContact::class, Notes::class, Message::class], version=1)
+@Database(entities=[SavedContact::class, Notes::class, Message::class], version=1,exportSchema = true)
 abstract class LocalDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
 

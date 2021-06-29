@@ -17,9 +17,11 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentAllContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG="AllContactFragment"
 
+@AndroidEntryPoint
 class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var binding: FragmentAllContactBinding

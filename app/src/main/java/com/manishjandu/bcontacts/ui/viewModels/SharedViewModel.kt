@@ -1,41 +1,39 @@
 package com.manishjandu.bcontacts.ui.viewModels
 
 
-import android.app.AlarmManager
-import android.app.Application
-import android.app.PendingIntent
+
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
 import android.database.Cursor
 import android.provider.ContactsContract
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
-import com.manishjandu.bcontacts.data.local.LocalDatabase
+import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
-import com.manishjandu.bcontacts.utils.FutureMessage
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.collections.set
 
 private const val TAG="SharedViewModel"
 
-class SharedViewModel(val app: Application) : AndroidViewModel(app) {
+@HiltViewModel
+class SharedViewModel @Inject constructor(
+    private val repo: ContactsRepository,
+) : ViewModel() {
+
     private val _contacts=MutableLiveData<List<Contact>>()
-    val contacts: LiveData<List<Contact>> = _contacts
+    val contacts: LiveData<List<Contact>> =_contacts
 
     private val _bContacts=MutableLiveData<List<SavedContact>>()
-    val bContacts: LiveData<List<SavedContact>> = _bContacts
+    val bContacts: LiveData<List<SavedContact>> =_bContacts
 
-    private val alarmManager=
-        app.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    private val intent=Intent(app.applicationContext, FutureMessage::class.java)
-
-    private val contactDao=
-        LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
-    private val repo=ContactsRepository(contactDao)
+    private val _futureMessages =MutableLiveData<List<Message>>()
+    val futureMessage:LiveData<List<Message>> = _futureMessages
 
     fun getContactsList(context: Context) {
         val contactList=arrayListOf<Contact>()
@@ -121,17 +119,12 @@ class SharedViewModel(val app: Application) : AndroidViewModel(app) {
         getContactLocally()
     }
 
-    private suspend fun removeAlarms(savedContact: SavedContact){
-        val savedMessages = repo.getMessages(savedContact.contactId)
-        for(message in savedMessages.messages){
-            cancelAlarm(message.messageId)
-        }
+    private suspend fun removeAlarms(savedContact: SavedContact) {
+        val savedMessages=repo.getMessages(savedContact.contactId)
+        _futureMessages.postValue(savedMessages.messages)
     }
 
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(app.applicationContext, requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
+
 
 }
 

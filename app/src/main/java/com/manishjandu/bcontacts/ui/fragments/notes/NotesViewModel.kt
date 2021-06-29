@@ -1,28 +1,25 @@
 package com.manishjandu.bcontacts.ui.fragments.notes
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
-import com.manishjandu.bcontacts.data.local.LocalDatabase
 import com.manishjandu.bcontacts.data.local.entities.Notes
 import com.manishjandu.bcontacts.data.local.entities.SavedContactWithNotes
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class NotesViewModel(app: Application) : AndroidViewModel(app) {
+@HiltViewModel
+class NotesViewModel @Inject constructor(private val repo: ContactsRepository) :ViewModel() {
     private val _notes=MutableLiveData<SavedContactWithNotes>()
     val notes: LiveData<SavedContactWithNotes> = _notes
 
     private val notesEventChannel=Channel<NotesEvent>()
     val notesEvent=notesEventChannel.receiveAsFlow()
-
-    private val contactDao=
-        LocalDatabase.getSavedContactDatabase(app.applicationContext).contactDao()
-    private val repo=ContactsRepository(contactDao)
 
     fun getNotes(contactId: Long)=viewModelScope.launch {
         val result=repo.getNotes(contactId)
