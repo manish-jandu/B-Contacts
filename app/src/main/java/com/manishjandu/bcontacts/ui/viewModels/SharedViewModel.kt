@@ -113,9 +113,8 @@ class SharedViewModel @Inject constructor(
     }
 
     fun removeContactLocally(savedContact: SavedContact)=viewModelScope.launch {
-        repo.removeAllNoteWithContact(savedContact.contactId)
-        repo.removeContactFromSavedContact(savedContact)
         removeAlarms(savedContact)
+        repo.removeContactFromSavedContact(savedContact)
         getContactLocally()
     }
 

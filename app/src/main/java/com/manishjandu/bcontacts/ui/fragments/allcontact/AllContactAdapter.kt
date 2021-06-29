@@ -1,8 +1,8 @@
 package com.manishjandu.bcontacts.ui.fragments.allcontact
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -31,7 +31,10 @@ class AllContactAdapter(private val onClick: OnClick) :
         private val contactNumber=binding.textViewContactNumber
         private val buttonCall=binding.buttonCall
         private val buttonMessage=binding.buttonMessage
-        private val buttonMoreOption=binding.buttonMoreOption
+        private val root=binding.root
+        private val expandableLayoutAllContact=binding.expandableLayoutAllContact
+        private val buttonAddToBContact=binding.buttonAddToBContact
+
         fun bind(item: Contact) {
             contactName.text=item.name
             contactNumber.text=item.phone
@@ -41,8 +44,15 @@ class AllContactAdapter(private val onClick: OnClick) :
             buttonMessage.setOnClickListener {
                 onClick.onMessageClicked(item.phone)
             }
-            buttonMoreOption.setOnClickListener {
-                onClick.onMoreOption(item,buttonMoreOption)
+            buttonAddToBContact.setOnClickListener {
+                onClick.onAddToBContactClicked(item)
+            }
+            root.setOnClickListener {
+                if (expandableLayoutAllContact.visibility == View.GONE) {
+                    expandableLayoutAllContact.visibility=View.VISIBLE
+                } else {
+                    expandableLayoutAllContact.visibility=View.GONE
+                }
             }
         }
     }
@@ -50,7 +60,7 @@ class AllContactAdapter(private val onClick: OnClick) :
     interface OnClick {
         fun onCallClicked(contactNumber: String)
         fun onMessageClicked(contactNumber: String)
-        fun onMoreOption(contact: Contact, buttonMoreOption: ImageButton)
+        fun onAddToBContactClicked(contact: Contact)
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<Contact>() {

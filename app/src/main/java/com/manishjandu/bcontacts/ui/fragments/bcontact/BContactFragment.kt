@@ -7,9 +7,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageButton
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -34,9 +32,10 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
 
     @Inject
     @Named("futureMessageIntent")
-      lateinit var intent: Intent
+    lateinit var intent: Intent
+
     @Inject
-      lateinit var alarmManager: AlarmManager
+    lateinit var alarmManager: AlarmManager
 
     override fun onStart() {
         super.onStart()
@@ -62,9 +61,10 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             bContactAdapter.submitList(it)
         }
 
-        viewModel.futureMessage.observe(viewLifecycleOwner){futureMessages->
-            for (message in futureMessages){
-                val pendingIntent=PendingIntent.getBroadcast(requireContext(), message.messageId, intent, 0)
+        viewModel.futureMessage.observe(viewLifecycleOwner) { futureMessages ->
+            for (message in futureMessages) {
+                val pendingIntent=
+                    PendingIntent.getBroadcast(requireContext(), message.messageId, intent, 0)
                 alarmManager.cancel(pendingIntent)
             }
         }
@@ -82,33 +82,22 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             startActivity(messageIntent)
         }
 
-        override fun onMoreOptionClicked(
-            savedContact: SavedContact,
-            buttonMoreOption: ImageButton
-        ) {
-            val popupMenu=PopupMenu(requireContext(), buttonMoreOption)
-            popupMenu.menuInflater.inflate(R.menu.more_options_menu_b_contact, popupMenu.menu)
-            popupMenu.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.button_remove_from_b_contact -> {
-                        alertDialog(savedContact)
-                    }
-                    R.id.button_notes -> {
-                        val action=BContactFragmentDirections.actionBContactFragmentToNotesFragment(
-                            savedContact.contactId
-                        )
-                        findNavController().navigate(action)
-                    }
-                    R.id.button_future_messages -> {
-                        val action = BContactFragmentDirections.actionBContactFragmentToMessagesFragment(
-                            savedContact.contactId,savedContact.phone
-                        )
-                        findNavController().navigate(action)
-                    }
-                }
-                true
-            }
-            popupMenu.show()
+        override fun onNotesClick(contactId: Long) {
+            val action=BContactFragmentDirections.actionBContactFragmentToNotesFragment(
+                contactId
+            )
+            findNavController().navigate(action)
+        }
+
+        override fun onRemoveFromBContactsClick(savedContact: SavedContact) {
+            alertDialog(savedContact)
+        }
+
+        override fun onFutureMessageClick(contactId: Long, phone: String) {
+            val action=BContactFragmentDirections.actionBContactFragmentToMessagesFragment(
+                contactId, phone
+            )
+            findNavController().navigate(action)
         }
     }
 
@@ -119,7 +108,7 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             .setPositiveButton("Delete") { _, _ ->
                 viewModel.removeContactLocally(savedContact)
             }
-            .setNegativeButton("No"){_,_ ->
+            .setNegativeButton("No") { _, _ ->
 
             }
             .create()

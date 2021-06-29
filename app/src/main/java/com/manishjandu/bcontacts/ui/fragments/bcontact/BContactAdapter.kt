@@ -2,13 +2,13 @@ package com.manishjandu.bcontacts.ui.fragments.bcontact
 
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
-import com.manishjandu.bcontacts.databinding.ItemContactBinding
+import com.manishjandu.bcontacts.databinding.ItemBContactBinding
 
 private const val TAG="AllContactAdapter"
 
@@ -16,7 +16,7 @@ class BContactAdapter(private val onClick: OnClick) :
     ListAdapter<SavedContact, BContactAdapter.BContactViewHolder>(DiffUtilCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BContactViewHolder {
-        val binding=ItemContactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding=ItemBContactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return BContactViewHolder(binding)
     }
 
@@ -25,14 +25,19 @@ class BContactAdapter(private val onClick: OnClick) :
         holder.bind(item)
     }
 
-    inner class BContactViewHolder(binding: ItemContactBinding) :
+    inner class BContactViewHolder(binding: ItemBContactBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val contactName=binding.textViewContactName
-        private val contactNumber=binding.textViewContactNumber
+        private val contactName=binding.textViewBContactName
+        private val contactNumber=binding.textViewBContactNumber
         private val buttonCall=binding.buttonCall
         private val buttonMessage=binding.buttonMessage
-        private val buttonMoreOption=binding.buttonMoreOption
+         private val expandableLayoutBContact = binding.expandableLayoutBContact
+        private val buttonNotes = binding.buttonNotes
+        private val buttonFutureMessage = binding.buttonFutureMessages
+        private val buttonRemoveFromBContact = binding.buttonRemoveFromBContact
+
+        private val root = binding.root
 
         fun bind(item: SavedContact) {
             contactName.text=item.name
@@ -44,8 +49,22 @@ class BContactAdapter(private val onClick: OnClick) :
             buttonMessage.setOnClickListener {
                 onClick.onMessageClicked(item.phone)
             }
-            buttonMoreOption.setOnClickListener {
-                onClick.onMoreOptionClicked(item, buttonMoreOption)
+
+            buttonNotes.setOnClickListener {
+                onClick.onNotesClick(item.contactId)
+            }
+            buttonFutureMessage.setOnClickListener {
+                onClick.onFutureMessageClick(item.contactId,item.phone)
+            }
+            buttonRemoveFromBContact.setOnClickListener {
+                onClick.onRemoveFromBContactsClick(item)
+            }
+            root.setOnClickListener {
+                if(expandableLayoutBContact.visibility == View.GONE) {
+                    expandableLayoutBContact.visibility=View.VISIBLE
+                }else{
+                    expandableLayoutBContact.visibility=View.GONE
+                }
             }
         }
     }
@@ -53,7 +72,9 @@ class BContactAdapter(private val onClick: OnClick) :
     interface OnClick {
         fun onCallClicked(contactNumber: String)
         fun onMessageClicked(contactNumber: String)
-        fun onMoreOptionClicked(savedContact: SavedContact, buttonMoreOption: ImageButton)
+         fun onNotesClick(contactId:Long)
+        fun onRemoveFromBContactsClick(savedContact: SavedContact)
+        fun onFutureMessageClick(contactId:Long,phone:String)
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<SavedContact>() {

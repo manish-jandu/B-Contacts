@@ -28,14 +28,15 @@ class MessagesViewModel @Inject constructor(private val repo: ContactsRepository
     }
 
     fun removeMessage(message: Message)=viewModelScope.launch {
-        repo.removeMessage(message)
         messageEventChannel.send(MessageEvent.CancelAlarm(message.messageId))
+        repo.removeMessage(message)
         getMessages(message.contactId)
         messageEventChannel.send(MessageEvent.ShowUndoMessageDelete(message))
     }
 
     fun addDeletedMessage(message: Message)=viewModelScope.launch {
         repo.addMessage(message)
+        getMessages(message.contactId)
     }
 
 
