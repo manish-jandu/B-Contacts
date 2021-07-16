@@ -11,12 +11,6 @@
         android:label="B-Contact"
         tools:layout="@layout/fragment_b_contact">
         <action
-            android:id="@+id/action_BContactFragment_to_notesFragment"
-            app:destination="@id/notesFragment" />
-        <action
-            android:id="@+id/action_BContactFragment_to_messagesFragment"
-            app:destination="@id/messagesFragment" />
-        <action
             android:id="@+id/action_BContactFragment_to_BContactBottomSheet"
             app:destination="@id/BContactBottomSheet" />
     </fragment>
@@ -94,5 +88,13 @@
         <action
             android:id="@+id/action_BContactBottomSheet_to_messagesFragment"
             app:destination="@id/messagesFragment" />
+        <action
+            android:id="@+id/action_BContactBottomSheet_to_addEditBirthDayFragment"
+            app:destination="@id/addEditBirthDayFragment" />
     </dialog>
+    <fragment
+        android:id="@+id/addEditBirthDayFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.addEditBirthday.AddEditBirthDayFragment"
+        android:label="fragment_add_edit_birthday"
+        tools:layout="@layout/fragment_add_edit_birthday" />
 </navigation>

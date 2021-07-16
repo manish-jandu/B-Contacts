@@ -72,7 +72,8 @@ class BContactBottomSheet() : BottomSheetDialogFragment() {
             }
 
             buttonBContactBDay.setOnClickListener {
-                //Todo:birth day fragment
+                val action = BContactBottomSheetDirections.actionBContactBottomSheetToAddEditBirthDayFragment()
+                findNavController().navigate(action)
             }
 
             buttonRemoveFromBContact.setOnClickListener {
