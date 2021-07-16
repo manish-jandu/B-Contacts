@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="Bottom_sheet_text_size">20sp</dimen>
+    <dimen name="bottom_sheet_text_margin_start">16dp</dimen>
+    <dimen name="bottom_sheet_text_margin_top">16dp</dimen>
+    <dimen name="bottom_sheet_divider_margin_horizontal">12dp</dimen>
+    <dimen name="bottom_sheet_divider_margin_top">6dp</dimen>
+    <dimen name="bottom_sheet_text_padding_8dp">8dp</dimen>
+</resources>

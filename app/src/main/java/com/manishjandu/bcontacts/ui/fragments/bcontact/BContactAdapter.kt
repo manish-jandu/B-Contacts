@@ -2,12 +2,12 @@ package com.manishjandu.bcontacts.ui.fragments.bcontact
 
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
+import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.ItemBContactBinding
 
 private const val TAG="AllContactAdapter"
@@ -32,14 +32,12 @@ class BContactAdapter(private val onClick: OnClick) :
         private val contactNumber=binding.textViewBContactNumber
         private val buttonCall=binding.buttonCall
         private val buttonMessage=binding.buttonMessage
-         private val expandableLayoutBContact = binding.expandableLayoutBContact
-        private val buttonNotes = binding.buttonNotes
-        private val buttonFutureMessage = binding.buttonFutureMessages
-        private val buttonRemoveFromBContact = binding.buttonRemoveFromBContact
 
-        private val root = binding.root
+        private val root=binding.root
 
         fun bind(item: SavedContact) {
+            val contact=Contact(item.contactId, item.name, item.phone)
+
             contactName.text=item.name
             contactNumber.text=item.phone
 
@@ -50,21 +48,8 @@ class BContactAdapter(private val onClick: OnClick) :
                 onClick.onMessageClicked(item.phone)
             }
 
-            buttonNotes.setOnClickListener {
-                onClick.onNotesClick(item.contactId)
-            }
-            buttonFutureMessage.setOnClickListener {
-                onClick.onFutureMessageClick(item.contactId,item.phone)
-            }
-            buttonRemoveFromBContact.setOnClickListener {
-                onClick.onRemoveFromBContactsClick(item)
-            }
             root.setOnClickListener {
-                if(expandableLayoutBContact.visibility == View.GONE) {
-                    expandableLayoutBContact.visibility=View.VISIBLE
-                }else{
-                    expandableLayoutBContact.visibility=View.GONE
-                }
+                onClick.bottomSheet(contact)
             }
         }
     }
@@ -72,9 +57,7 @@ class BContactAdapter(private val onClick: OnClick) :
     interface OnClick {
         fun onCallClicked(contactNumber: String)
         fun onMessageClicked(contactNumber: String)
-         fun onNotesClick(contactId:Long)
-        fun onRemoveFromBContactsClick(savedContact: SavedContact)
-        fun onFutureMessageClick(contactId:Long,phone:String)
+        fun bottomSheet(contact: Contact)
     }
 
     class DiffUtilCallback : DiffUtil.ItemCallback<SavedContact>() {

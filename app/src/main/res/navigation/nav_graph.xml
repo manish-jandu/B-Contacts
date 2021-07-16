@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_BContactFragment_to_messagesFragment"
             app:destination="@id/messagesFragment" />
+        <action
+            android:id="@+id/action_BContactFragment_to_BContactBottomSheet"
+            app:destination="@id/BContactBottomSheet" />
     </fragment>
     <fragment
         android:id="@+id/AllContactFragment"
@@ -76,4 +79,20 @@
             android:name="messageId"
             app:argType="integer" />
     </fragment>
+    <dialog
+        android:id="@+id/BContactBottomSheet"
+        android:name="com.manishjandu.bcontacts.ui.fragments.bcontactBottomSheet.BContactBottomSheet"
+        android:label="bottom_sheet_b_contact"
+        tools:layout="@layout/bottom_sheet_b_contact">
+        <argument
+            android:name="contact"
+            app:argType="com.manishjandu.bcontacts.data.models.Contact"
+            />
+        <action
+            android:id="@+id/action_BContactBottomSheet_to_notesFragment"
+            app:destination="@id/notesFragment" />
+        <action
+            android:id="@+id/action_BContactBottomSheet_to_messagesFragment"
+            app:destination="@id/messagesFragment" />
+    </dialog>
 </navigation>

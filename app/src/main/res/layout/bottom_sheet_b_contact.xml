@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="24dp"
+    tools:context=".ui.fragments.bcontactBottomSheet.BContactBottomSheet">
+
+    <TextView
+        android:id="@+id/text_view_b_contact_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="@string/contact_name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_view_b_contact_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="@dimen/bottom_sheet_text_margin_start"
+        android:layout_marginTop="@dimen/bottom_sheet_text_margin_top"
+        android:ellipsize="end"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="9412315zzz"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_b_contact_name" />
+
+    <ImageButton
+        android:id="@+id/button_call"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="7dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/ic_call"
+        android:contentDescription="@string/button_call"
+        app:layout_constraintEnd_toStartOf="@+id/button_message"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_b_contact_name" />
+
+    <ImageButton
+        android:id="@+id/button_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/ic_message"
+        android:contentDescription="@string/button_message"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_view_b_contact_name" />
+
+    <TextView
+        android:id="@+id/button_b_contact_b_day"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="@dimen/bottom_sheet_text_margin_start"
+        android:paddingVertical="@dimen/bottom_sheet_text_padding_8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="B-Day"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_notes" />
+
+    <TextView
+        android:id="@+id/button_notes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="@dimen/bottom_sheet_text_margin_start"
+        android:paddingVertical="@dimen/bottom_sheet_text_padding_8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="Notes"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_view_b_contact_number" />
+
+    <TextView
+        android:id="@+id/button_future_messages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="@dimen/bottom_sheet_text_margin_start"
+        android:paddingVertical="@dimen/bottom_sheet_text_padding_8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="Future Messages"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_b_contact_b_day" />
+
+    <TextView
+        android:id="@+id/button_remove_from_b_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginStart="@dimen/bottom_sheet_text_margin_start"
+        android:paddingVertical="@dimen/bottom_sheet_text_padding_8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:ellipsize="end"
+        android:focusable="true"
+        android:gravity="start"
+        android:maxLines="1"
+        android:text="Remove from B Contact"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="@dimen/Bottom_sheet_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_future_messages" />
+</androidx.constraintlayout.widget.ConstraintLayout>

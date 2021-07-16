@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.manishjandu.bcontacts.data.ContactsRepository
-import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,8 +31,7 @@ class SharedViewModel @Inject constructor(
     private val _bContacts=MutableLiveData<List<SavedContact>>()
     val bContacts: LiveData<List<SavedContact>> =_bContacts
 
-    private val _futureMessages =MutableLiveData<List<Message>>()
-    val futureMessage:LiveData<List<Message>> = _futureMessages
+
 
     fun getContactsList(context: Context) {
         val contactList=arrayListOf<Contact>()
@@ -112,16 +110,9 @@ class SharedViewModel @Inject constructor(
         _bContacts.postValue(result)
     }
 
-    fun removeContactLocally(savedContact: SavedContact)=viewModelScope.launch {
-        removeAlarms(savedContact)
-        repo.removeContactFromSavedContact(savedContact)
-        getContactLocally()
-    }
 
-    private suspend fun removeAlarms(savedContact: SavedContact) {
-        val savedMessages=repo.getMessages(savedContact.contactId)
-        _futureMessages.postValue(savedMessages.messages)
-    }
+
+
 
 
 

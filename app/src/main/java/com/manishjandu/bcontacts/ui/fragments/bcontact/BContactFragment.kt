@@ -1,13 +1,10 @@
 package com.manishjandu.bcontacts.ui.fragments.bcontact
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -15,12 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
-import com.manishjandu.bcontacts.data.local.entities.SavedContact
+import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-import javax.inject.Named
 
 private const val TAG="BContactFragment"
 
@@ -29,13 +24,6 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var binding: FragmentBContactBinding
     private lateinit var bContactAdapter: BContactAdapter
-
-    @Inject
-    @Named("futureMessageIntent")
-    lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
 
     override fun onStart() {
         super.onStart()
@@ -56,17 +44,8 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         recyclerViewBContact.adapter=bContactAdapter
         recyclerViewBContact.layoutManager=LinearLayoutManager(requireContext())
 
-
         viewModel.bContacts.observe(viewLifecycleOwner) {
             bContactAdapter.submitList(it)
-        }
-
-        viewModel.futureMessage.observe(viewLifecycleOwner) { futureMessages ->
-            for (message in futureMessages) {
-                val pendingIntent=
-                    PendingIntent.getBroadcast(requireContext(), message.messageId, intent, 0)
-                alarmManager.cancel(pendingIntent)
-            }
         }
 
     }
@@ -82,38 +61,13 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
             startActivity(messageIntent)
         }
 
-        override fun onNotesClick(contactId: Long) {
-            val action=BContactFragmentDirections.actionBContactFragmentToNotesFragment(
-                contactId
-            )
-            findNavController().navigate(action)
-        }
-
-        override fun onRemoveFromBContactsClick(savedContact: SavedContact) {
-            alertDialog(savedContact)
-        }
-
-        override fun onFutureMessageClick(contactId: Long, phone: String) {
-            val action=BContactFragmentDirections.actionBContactFragmentToMessagesFragment(
-                contactId, phone
-            )
+        override fun bottomSheet(contact: Contact) {
+            val action=
+                BContactFragmentDirections.actionBContactFragmentToBContactBottomSheet(contact)
             findNavController().navigate(action)
         }
     }
 
-    private fun alertDialog(savedContact: SavedContact) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Alert!")
-            .setMessage("Do you really want to delete this contact, as it will also delete notes and messages related to it?")
-            .setPositiveButton("Delete") { _, _ ->
-                viewModel.removeContactLocally(savedContact)
-            }
-            .setNegativeButton("No") { _, _ ->
-
-            }
-            .create()
-            .show()
-    }
 
     private fun checkPermission(): Boolean {
         return isAllGranted(Permission.READ_CONTACTS, Permission.WRITE_CONTACTS)
