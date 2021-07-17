@@ -76,7 +76,7 @@
     <dialog
         android:id="@+id/BContactBottomSheet"
         android:name="com.manishjandu.bcontacts.ui.fragments.bcontactBottomSheet.BContactBottomSheet"
-        android:label="bottom_sheet_b_contact"
+        android:label=" "
         tools:layout="@layout/bottom_sheet_b_contact">
         <argument
             android:name="contact"
@@ -95,6 +95,10 @@
     <fragment
         android:id="@+id/addEditBirthDayFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.addEditBirthday.AddEditBirthDayFragment"
-        android:label="fragment_add_edit_birthday"
-        tools:layout="@layout/fragment_add_edit_birthday" />
+        android:label="Birthday"
+        tools:layout="@layout/fragment_add_edit_birthday">
+        <argument
+            android:name="contactNumber"
+            app:argType="string" />
+    </fragment>
 </navigation>

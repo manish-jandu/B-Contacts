@@ -72,7 +72,7 @@ class BContactBottomSheet() : BottomSheetDialogFragment() {
             }
 
             buttonBContactBDay.setOnClickListener {
-                val action = BContactBottomSheetDirections.actionBContactBottomSheetToAddEditBirthDayFragment()
+                val action = BContactBottomSheetDirections.actionBContactBottomSheetToAddEditBirthDayFragment(contact.phone)
                 findNavController().navigate(action)
             }
 

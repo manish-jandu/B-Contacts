@@ -60,4 +60,16 @@ class ContactsRepository(private val contactDao: ContactDao) {
     suspend fun removeAllMessagesWithContact(contactId: Long) {
         contactDao.deleteMessagesWithSavedContact(contactId)
     }
+
+    suspend fun addBirthday(birthday: Birthday){
+        contactDao.insertBirthDay(birthday)
+    }
+
+    suspend fun removeBirthday(birthday: Birthday){
+        contactDao.deleteBirthDay(birthday)
+    }
+
+    suspend fun getBirthday(requestCode:Int): Birthday {
+        return contactDao.getBirthDay(requestCode)
+    }
 }

@@ -49,4 +49,13 @@ interface ContactDao {
     @Query("DELETE FROM message_table WHERE contactId =:contactId")
     suspend fun deleteMessagesWithSavedContact(contactId: Long)
 
+    @Insert(onConflict=OnConflictStrategy.REPLACE)
+    suspend fun insertBirthDay(birthday: Birthday)
+
+    @Query("SELECT * FROM birthday_table WHERE requestCode =:requestCode")
+    suspend fun getBirthDay(requestCode: Int): Birthday
+
+    @Delete
+    suspend fun deleteBirthDay(birthday: Birthday)
+
 }
