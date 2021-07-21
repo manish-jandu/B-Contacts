@@ -51,6 +51,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.fragment:fragment-ktx:1.3.0-beta01'
+
 
     //run time permission
     implementation 'com.afollestad.assent:core:3.0.0-RC4'

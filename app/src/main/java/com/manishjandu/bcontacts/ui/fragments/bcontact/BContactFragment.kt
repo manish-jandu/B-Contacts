@@ -5,8 +5,10 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.afollestad.assent.*
@@ -14,6 +16,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentBContactBinding
+import com.manishjandu.bcontacts.ui.fragments.bcontactBottomSheet.BContactBottomSheet.Companion.BOTTOM_SHEET_REQUEST_KEY
+import com.manishjandu.bcontacts.ui.fragments.bcontactBottomSheet.BContactBottomSheet.Companion.REFRESH_BCONTACTS
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,6 +51,13 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         viewModel.bContacts.observe(viewLifecycleOwner) {
             bContactAdapter.submitList(it)
         }
+        setFragmentResultListener(BOTTOM_SHEET_REQUEST_KEY) { _, bundle ->
+            val result = bundle.getBoolean(REFRESH_BCONTACTS)
+            if (result) {
+                viewModel.getContactLocally()
+                Toast.makeText(requireContext(), "Contact Removed", Toast.LENGTH_SHORT).show()
+            }
+        }
 
     }
 
@@ -62,9 +73,11 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
         }
 
         override fun bottomSheet(contact: Contact) {
-            val action=
-                BContactFragmentDirections.actionBContactFragmentToBContactBottomSheet(contact)
-            findNavController().navigate(action)
+            if(requireActivity()!=null){
+                val action=
+                    BContactFragmentDirections.actionBContactFragmentToBContactBottomSheet(contact)
+                findNavController().navigate(action)
+            }
         }
     }
 
