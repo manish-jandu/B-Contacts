@@ -1,7 +1,6 @@
 package com.manishjandu.bcontacts.ui.viewModels
 
 
-
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
@@ -14,6 +13,7 @@ import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.entities.SavedContact
 import com.manishjandu.bcontacts.data.models.Contact
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.collections.set
@@ -23,7 +23,9 @@ private const val TAG="SharedViewModel"
 @HiltViewModel
 class SharedViewModel @Inject constructor(
     private val repo: ContactsRepository,
+    @ApplicationContext context: Context
 ) : ViewModel() {
+    private val resolver: ContentResolver=context.contentResolver
 
     private val _contacts=MutableLiveData<List<Contact>>()
     val contacts: LiveData<List<Contact>> =_contacts
@@ -32,11 +34,10 @@ class SharedViewModel @Inject constructor(
     val bContacts: LiveData<List<SavedContact>> =_bContacts
 
 
-
-    fun getContactsList(context: Context) {
-        val contactList=arrayListOf<Contact>()
-        val resolver: ContentResolver=context.contentResolver
+    fun getContactsList(searchString: String?=null) {
         val phones=HashMap<Long, MutableList<String>>()
+        val contactList: ArrayList<Contact> =arrayListOf()
+
 
         var getContactsCursor: Cursor?=resolver.query(
             ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -73,17 +74,36 @@ class SharedViewModel @Inject constructor(
             getContactsCursor.close()
         }
 
-        getContactsCursor=resolver.query(
-            ContactsContract.Contacts.CONTENT_URI,
-            arrayOf(
-                ContactsContract.Contacts._ID,
-                ContactsContract.Contacts.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.PHOTO_URI
-            ),
-            null,
-            null,
-            ContactsContract.Contacts.DISPLAY_NAME + " ASC"
-        )
+        val SELECTION: String=
+            "${ContactsContract.Contacts.DISPLAY_NAME_PRIMARY} LIKE ?"
+        // val selectionArgs=arrayOf("%$searchString%")
+        val selectionArgs=arrayOf("%$searchString%")
+
+        if (searchString.isNullOrEmpty()) {
+            getContactsCursor=resolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.PHOTO_URI
+                ),
+                null,
+                null,
+                ContactsContract.Contacts.DISPLAY_NAME + " ASC"
+            )
+        } else {
+            getContactsCursor=resolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                arrayOf(
+                    ContactsContract.Contacts._ID,
+                    ContactsContract.Contacts.DISPLAY_NAME,
+                    ContactsContract.CommonDataKinds.Phone.PHOTO_URI
+                ),
+                SELECTION,
+                selectionArgs,
+                ContactsContract.Contacts.DISPLAY_NAME + " ASC"
+            )
+        }
 
         while (getContactsCursor != null &&
             getContactsCursor.moveToNext()
@@ -95,9 +115,9 @@ class SharedViewModel @Inject constructor(
                 for (phone in contactPhones) {
                     contactList.add(Contact(contactId, name, phone))
                 }
-                _contacts.postValue(contactList)
             }
         }
+        _contacts.postValue(contactList)
         getContactsCursor?.close()
     }
 
@@ -109,11 +129,6 @@ class SharedViewModel @Inject constructor(
         val result=repo.getContactsFromSavedContact()
         _bContacts.postValue(result)
     }
-
-
-
-
-
 
 
 }

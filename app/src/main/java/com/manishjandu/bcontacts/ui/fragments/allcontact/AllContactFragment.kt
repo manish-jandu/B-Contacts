@@ -5,8 +5,11 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,13 +28,14 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
     private val viewModel: SharedViewModel by activityViewModels()
     private lateinit var binding: FragmentAllContactBinding
     private lateinit var allContactAdapter: AllContactAdapter
+    private lateinit var searchView: SearchView
 
     override fun onStart() {
         super.onStart()
         if (!checkPermission()) {
             setPermissions()
         } else {
-            viewModel.getContactsList(requireContext())
+            viewModel.getContactsList()
         }
     }
 
@@ -55,6 +59,38 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
                 allContactAdapter.submitList(it)
             }
         }
+
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_item_search, menu)
+
+        val searchItem=menu.findItem(R.id.action_search)
+        searchView=searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query.isNullOrEmpty()) {
+                    binding.recyclerViewAllContact.scrollToPosition(0)
+                    viewModel.getContactsList()
+                } else {
+                    viewModel.getContactsList(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    binding.recyclerViewAllContact.scrollToPosition(0)
+                    viewModel.getContactsList()
+                } else {
+                    viewModel.getContactsList(newText)
+                }
+                return false
+            }
+        })
 
     }
 
@@ -90,7 +126,7 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
         ) { result ->
 
             if (result.isAllGranted()) {
-                viewModel.getContactsList(requireContext())
+                viewModel.getContactsList()
             }
 
             if (result[Permission.READ_CONTACTS] == GrantResult.DENIED ||
@@ -124,4 +160,8 @@ class AllContactFragment : Fragment(R.layout.fragment_all_contact) {
             .show()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        searchView.setOnQueryTextListener(null)
+    }
 }
