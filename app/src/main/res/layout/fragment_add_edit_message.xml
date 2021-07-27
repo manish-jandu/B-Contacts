@@ -8,15 +8,50 @@
     android:padding="10dp"
     tools:context=".ui.fragments.addEditMessage.AddEditMessageFragment">
 
+    <LinearLayout
+        android:id="@+id/linear_layout_selected_contact"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_selected_contacts"
+        android:visibility="gone"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/image_button_select_contact"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Selected Contact" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_selected_contacts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/image_button_select_contact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_person"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/linear_layout_selected_contact"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/edit_text_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="40dp"
         android:hint="@string/message"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@+id/linear_layout_selected_contact" />
 
     <TextView
         android:id="@+id/text_view_show_date"
@@ -59,5 +94,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_time_picker" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 

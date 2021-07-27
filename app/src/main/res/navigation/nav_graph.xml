@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_BContactFragment_to_BContactBottomSheet"
             app:destination="@id/BContactBottomSheet" />
+        <action
+            android:id="@+id/action_BContactFragment_to_multipleUsersFragment"
+            app:destination="@id/multipleUsersFragment" />
     </fragment>
     <fragment
         android:id="@+id/AllContactFragment"
@@ -101,4 +104,16 @@
             android:name="contactNumber"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/multipleUsersFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.multipleUsers.MultipleUsersFragment"
+        android:label="Multiple Messages" >
+        <action
+            android:id="@+id/action_multipleUsersFragment_to_addEditMultipleUserFragment"
+            app:destination="@id/addEditMultipleUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditMultipleUserFragment"
+        android:name="com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserFragment"
+        android:label="Message" />
 </navigation>

@@ -1,9 +1,11 @@
-package com.manishjandu.bcontacts.ui.fragments.bcontact
+ package com.manishjandu.bcontacts.ui.fragments.bcontact
 
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -21,7 +23,7 @@ import com.manishjandu.bcontacts.ui.fragments.bcontactBottomSheet.BContactBottom
 import com.manishjandu.bcontacts.ui.viewModels.SharedViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TAG="BContactFragment"
+ private const val TAG="BContactFragment"
 
 @AndroidEntryPoint
 class BContactFragment : Fragment(R.layout.fragment_b_contact) {
@@ -58,8 +60,20 @@ class BContactFragment : Fragment(R.layout.fragment_b_contact) {
                 Toast.makeText(requireContext(), "Contact Removed", Toast.LENGTH_SHORT).show()
             }
         }
-
+        setHasOptionsMenu(true)
     }
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_item_multiple_message, menu)
+
+        val buttonMultiUser = menu.findItem(R.id.action_navigate_to_multiple_message_fragment)
+        buttonMultiUser.setOnMenuItemClickListener {
+            val action = BContactFragmentDirections.actionBContactFragmentToMultipleUsersFragment()
+            findNavController().navigate(action)
+            true
+        }
+    }
+
 
     inner class OnClick : BContactAdapter.OnClick {
         override fun onCallClicked(contactNumber: String) {
