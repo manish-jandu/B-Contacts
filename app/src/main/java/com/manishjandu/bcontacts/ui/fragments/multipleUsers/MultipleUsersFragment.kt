@@ -16,7 +16,8 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
         _binding=FragmentMessagesBinding.bind(view)
 
         binding.floatingButtonAddMessage.setOnClickListener {
-            val action = MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment()
+            val action=
+                MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment()
             findNavController().navigate(action)
         }
 
