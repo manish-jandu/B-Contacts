@@ -7,9 +7,10 @@ import android.telephony.SmsManager
 
 class FutureMessage : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent) {
-         val message = intent.getStringExtra("message")!!
-        val contactNumber = intent.getStringExtra("contactNumber")!!
-        sendSms(contactNumber,message)
+        val message=intent.getStringExtra("message")!!
+        val contactNumber=intent.getStringExtra("contactNumber")!!
+
+        sendSms(contactNumber, message)
     }
 
     private fun sendSms(address: String, message: String) {

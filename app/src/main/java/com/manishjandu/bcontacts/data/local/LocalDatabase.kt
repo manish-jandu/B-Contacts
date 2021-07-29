@@ -4,12 +4,9 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.manishjandu.bcontacts.data.local.entities.Birthday
-import com.manishjandu.bcontacts.data.local.entities.Message
-import com.manishjandu.bcontacts.data.local.entities.Notes
-import com.manishjandu.bcontacts.data.local.entities.SavedContact
+import com.manishjandu.bcontacts.data.local.entities.*
 
-@Database(entities=[SavedContact::class, Notes::class, Message::class,Birthday::class], version=1,exportSchema = true)
+@Database(entities=[SavedContact::class, Notes::class, Message::class,Birthday::class,MultipleUserMessage::class], version=1,exportSchema = true)
 abstract class LocalDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
 

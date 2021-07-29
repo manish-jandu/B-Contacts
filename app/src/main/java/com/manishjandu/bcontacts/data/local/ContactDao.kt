@@ -58,4 +58,15 @@ interface ContactDao {
     @Delete
     suspend fun deleteBirthDay(birthday: Birthday)
 
+    @Query("SELECT * FROM multiple_user_message_table")
+    suspend fun getAllMultipleUserMessage():List<MultipleUserMessage>
+
+    @Delete
+    suspend fun deleteMultipleUserMessage(multipleUserMessage: MultipleUserMessage)
+
+    @Query ("SELECT * FROM multiple_user_message_table WHERE multipleUserMessageId =:multipleUserMessageId")
+    suspend fun getMultipleUserMessage(multipleUserMessageId:Int):MultipleUserMessage
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMultipleUserMessage(multipleUserMessage: MultipleUserMessage)
 }

@@ -72,4 +72,8 @@ class ContactsRepository(private val contactDao: ContactDao) {
     suspend fun getBirthday(requestCode:Int): Birthday {
         return contactDao.getBirthDay(requestCode)
     }
+
+    suspend fun addMultipleUserMessage(newMessage: MultipleUserMessage) {
+        contactDao.insertMultipleUserMessage(newMessage)
+    }
 }
