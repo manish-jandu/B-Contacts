@@ -68,5 +68,5 @@ interface ContactDao {
     suspend fun getMultipleUserMessage(multipleUserMessageId:Int):MultipleUserMessage
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMultipleUserMessage(multipleUserMessage: MultipleUserMessage)
+    suspend fun insertMultipleUserMessage(multipleUserMessage: MultipleUserMessage):Long
 }

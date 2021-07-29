@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
@@ -26,6 +27,7 @@ import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultip
 import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserViewModel.AddEditMessageEvent
 import com.manishjandu.bcontacts.utils.Constants.CONTACT_SELECTED
 import com.manishjandu.bcontacts.utils.Constants.FRAGMENT_SELECT_MULTIPLE_CONTACT_REQUEST_KEY
+import com.manishjandu.bcontacts.utils.enums.FileType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.util.*
@@ -39,6 +41,8 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     private var _binding: FragmentAddEditMessageBinding?=null
     private val binding get()=_binding!!
     private val viewModel: AddEditMultipleUserViewModel by viewModels()
+    private val args : AddEditMultipleUserFragmentArgs by navArgs()
+
     private var selectedContacts=arrayListOf<Contact>()
     private lateinit var adapter: AddEditMultipleUserAdapter
     private lateinit var textViewShowDate: TextView
@@ -63,8 +67,14 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         super.onViewCreated(view, savedInstanceState)
         _binding=FragmentAddEditMessageBinding.bind(view)
 
-        //nav args if enum new : message id = null
-        //if enum edit : message id = nav args
+        multipleUserMessageId = args.multipleUserMessageId
+        val fileType = args.fileType
+
+        if(fileType == FileType.NEW){
+            multipleUserMessageId = System.currentTimeMillis().toInt()
+        }else{
+            viewModel.getMessage(multipleUserMessageId!!)
+        }
 
         textViewShowDate=binding.textViewShowDate
         textViewShowTime=binding.textViewShowTime
@@ -83,6 +93,8 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                 textViewShowDate.text=getDateInString(it.day, it.month, it.year)
                 textViewShowTime.text=getTimeInAmPm(it.hour, it.minutes)
                 editTextMessage.setText(it.message)
+                selectedContacts =it.contacts as ArrayList<Contact>
+                adapter.submitList(selectedContacts)
             }
         }
 
@@ -93,11 +105,13 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                         findNavController().popBackStack()
                     }
                     is AddEditMessageEvent.SetAlarm -> {
+                        val message = event.multipleUserMessage
+                        val phoneNumbers = getContactsInString(message.contacts)
                         setAlarm(
-                            event.message.timeInMillis,
-                            event.message.messageId,
-                            event.message.message,
-                            event.message.phone
+                            message.timeInMillis,
+                            message.multipleUserMessageId,
+                            message.message,
+                            phoneNumbers
                         )
                     }
                     is AddEditMessageEvent.CancelAlarm -> {
@@ -107,6 +121,14 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
             }
         }
 
+    }
+
+    private fun getContactsInString(contacts: List<Contact>): String {
+        var contactsInString = ""
+        for(i in contacts){
+            contactsInString += "${i.phone},"
+        }
+        return contactsInString
     }
 
     private fun setupButtons() {
@@ -169,7 +191,7 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         } else {
             val timeInMills=createTimeInMills()
             viewModel.setFutureMessage(
-                multipleUserMessageId,
+                multipleUserMessageId!!,
                 selectedContacts,
                 message,
                 minutes!!,

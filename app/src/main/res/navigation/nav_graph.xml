@@ -50,7 +50,7 @@
         android:id="@+id/messagesFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.messages.MessagesFragment"
         android:label="Messages"
-        tools:layout="@layout/fragment_messages" >
+        tools:layout="@layout/fragment_messages">
         <argument
             android:name="contactId"
             app:argType="long" />
@@ -65,7 +65,7 @@
         android:id="@+id/addEditMessageFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.addEditMessage.AddEditMessageFragment"
         android:label="Add Message"
-        tools:layout="@layout/fragment_add_edit_message" >
+        tools:layout="@layout/fragment_add_edit_message">
         <argument
             android:name="contactId"
             app:argType="long" />
@@ -83,8 +83,7 @@
         tools:layout="@layout/bottom_sheet_b_contact">
         <argument
             android:name="contact"
-            app:argType="com.manishjandu.bcontacts.data.models.Contact"
-            />
+            app:argType="com.manishjandu.bcontacts.data.models.Contact" />
         <action
             android:id="@+id/action_BContactBottomSheet_to_notesFragment"
             app:destination="@id/notesFragment" />
@@ -107,7 +106,7 @@
     <fragment
         android:id="@+id/multipleUsersFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.multipleUsers.MultipleUsersFragment"
-        android:label="Multiple Messages" >
+        android:label="Multiple Messages">
         <action
             android:id="@+id/action_multipleUsersFragment_to_addEditMultipleUserFragment"
             app:destination="@id/addEditMultipleUserFragment" />
@@ -115,10 +114,17 @@
     <fragment
         android:id="@+id/addEditMultipleUserFragment"
         android:name="com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserFragment"
-        android:label="Message" >
+        android:label="Message">
         <action
             android:id="@+id/action_addEditMultipleUserFragment_to_selectMultipleContactFragment"
             app:destination="@id/selectMultipleContactFragment" />
+        <argument
+            android:name="fileType"
+            android:defaultValue="NEW"
+            app:argType="com.manishjandu.bcontacts.utils.enums.FileType" />
+        <argument
+            android:name="multipleUserMessageId"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/selectMultipleContactFragment"

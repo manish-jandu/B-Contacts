@@ -61,19 +61,25 @@ class ContactsRepository(private val contactDao: ContactDao) {
         contactDao.deleteMessagesWithSavedContact(contactId)
     }
 
-    suspend fun addBirthday(birthday: Birthday){
+    suspend fun addBirthday(birthday: Birthday) {
         contactDao.insertBirthDay(birthday)
     }
 
-    suspend fun removeBirthday(birthday: Birthday){
+    suspend fun removeBirthday(birthday: Birthday) {
         contactDao.deleteBirthDay(birthday)
     }
 
-    suspend fun getBirthday(requestCode:Int): Birthday {
+    suspend fun getBirthday(requestCode: Int): Birthday {
         return contactDao.getBirthDay(requestCode)
     }
 
-    suspend fun addMultipleUserMessage(newMessage: MultipleUserMessage) {
-        contactDao.insertMultipleUserMessage(newMessage)
+    suspend fun addMultipleUserMessage(newMessage: MultipleUserMessage): Int {
+        return contactDao.insertMultipleUserMessage(newMessage).toInt()
+    }
+
+    suspend fun getAllMultipleUserMessages()=contactDao.getAllMultipleUserMessage()
+    suspend fun getMultipleUserMessage(messageId: Int)=contactDao.getMultipleUserMessage(messageId)
+    suspend fun removeMultipleUserMessage(multipleUserMessage: MultipleUserMessage) {
+        contactDao.deleteMultipleUserMessage(multipleUserMessage)
     }
 }
