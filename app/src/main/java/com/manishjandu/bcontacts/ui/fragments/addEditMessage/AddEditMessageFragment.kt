@@ -65,7 +65,6 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
 
         binding.buttonTimePicker.setOnClickListener {
             showDatePicker()
-            showTimePicker()
         }
 
         binding.buttonSaveMessage.setOnClickListener {
@@ -94,8 +93,8 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
 
         viewModel.message.observe(viewLifecycleOwner) {
             it?.let {
-                textViewShowDate.text=getDateInString(it.day, it.month, it.year)
-                textViewShowTime.text=getTimeInAmPm(it.hour, it.minutes)
+                textViewShowDate.text=getDateInString(it.day, it.month+1, it.year)
+                textViewShowTime.text=getTimeInAmPm(it.hour-1, it.minutes)
                 editTextMessage.setText(it.message)
             }
         }
@@ -145,7 +144,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             minutes=String.format("%02d", timePicker.minute).toInt()
             hour=String.format("%02d", timePicker.hour).toInt()
 
-            val timeInAmPm=getTimeInAmPm(hour, minutes!!)
+            val timeInAmPm=getTimeInAmPm(hour-1, minutes!!)
             textViewShowTime.text=timeInAmPm
         }
     }
@@ -160,16 +159,16 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
         datePicker.show(parentFragmentManager, "")
 
         datePicker.addOnPositiveButtonClickListener {
-
             calendar.time=Date(it)
 
             day=calendar.get(Calendar.DAY_OF_MONTH)
             month=calendar.get(Calendar.MONTH)
             year=calendar.get(Calendar.YEAR)
 
-            val dateInString=getDateInString(day!!, month, year)
+            val dateInString=getDateInString(day!!, month+1, year)
             textViewShowDate.text=dateInString
 
+            showTimePicker()
         }
     }
 

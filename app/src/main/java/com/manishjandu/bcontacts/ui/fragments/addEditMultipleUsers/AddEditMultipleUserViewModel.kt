@@ -23,7 +23,7 @@ class AddEditMultipleUserViewModel @Inject constructor(private val repo: Contact
     val addEditMessageEvent=addEditMessageChannel.receiveAsFlow()
 
     fun setFutureMessage(
-        multipleUserMessageId: Int,
+        multipleUserMessageId: Int?=null,
         contacts: List<Contact>,
         message: String,
         minutes: Int,
@@ -33,20 +33,37 @@ class AddEditMultipleUserViewModel @Inject constructor(private val repo: Contact
         year: Int,
         timeInMillis: Long,
     )=viewModelScope.launch {
-        val message=MultipleUserMessage(
-            message=message,
-            contacts=contacts,
-            minutes=minutes,
-            hour=hour,
-            day=day,
-            month=month,
-            year=year,
-            timeInMillis=timeInMillis,
-            multipleUserMessageId=multipleUserMessageId
-        )
-        repo.addMultipleUserMessage(message)
-        addEditMessageChannel.send(AddEditMessageEvent.CancelAlarm(message.multipleUserMessageId))
-        addEditMessageChannel.send(AddEditMessageEvent.SetAlarm(message))
+
+        if (multipleUserMessageId == null) {
+            val message=MultipleUserMessage(
+                message=message,
+                contacts=contacts,
+                minutes=minutes,
+                hour=hour,
+                day=day,
+                month=month,
+                year=year,
+                timeInMillis=timeInMillis,
+            )
+            val messagedId=repo.addMultipleUserMessage(message)
+            message.multipleUserMessageId=messagedId
+            addEditMessageChannel.send(AddEditMessageEvent.SetAlarm(message))
+        } else {
+            val message=MultipleUserMessage(
+                message=message,
+                contacts=contacts,
+                minutes=minutes,
+                hour=hour,
+                day=day,
+                month=month,
+                year=year,
+                timeInMillis=timeInMillis,
+                multipleUserMessageId=multipleUserMessageId
+            )
+            repo.addMultipleUserMessage(message)
+            addEditMessageChannel.send(AddEditMessageEvent.CancelAlarm(message.multipleUserMessageId))
+            addEditMessageChannel.send(AddEditMessageEvent.SetAlarm(message))
+        }
         addEditMessageChannel.send(AddEditMessageEvent.MessageAddingSuccessful)
     }
 

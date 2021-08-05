@@ -31,7 +31,7 @@ class MessagesAdapter(val onMessageClick: OnMessageClick) :
                 val position=adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     val item=getItem(position)
-                    onMessageClick.onRootClick(item.messageId,item.contactId,item.phone)
+                    onMessageClick.onRootClick(item.messageId, item.contactId, item.phone)
                 }
             }
         }
@@ -39,8 +39,29 @@ class MessagesAdapter(val onMessageClick: OnMessageClick) :
         fun bind(item: Message) {
             textViewMessage.text=item.message
 
-            val msgTime="${item.day}-${item.month}-${item.year} at ${item.hour}:${item.minutes}"
+            val date=getDateInString(item.day, item.month + 1, item.year)
+            val time=getTimeInAmPm(item.hour - 1, item.minutes)
+
+            val msgTime="$date at $time "
             textViewMessageTime.text=msgTime
+        }
+
+        private fun getDateInString(day: Int, month: Int, year: Int): String {
+            return "$day-$month-$year"
+        }
+
+        private fun getTimeInAmPm(hour: Int, minute: Int): String {
+            return if (hour > 12) {
+                String.format("%02d", hour - 12 + 1) + ":" + String.format(
+                    "%02d",
+                    minute
+                ) + "PM"
+            } else {
+                String.format("%02d", hour + 1) + ":" + String.format(
+                    "%02d",
+                    minute
+                ) + "AM"
+            }
         }
     }
 

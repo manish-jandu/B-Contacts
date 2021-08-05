@@ -1,9 +1,11 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -27,6 +29,7 @@ import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultip
 import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserViewModel.AddEditMessageEvent
 import com.manishjandu.bcontacts.utils.Constants.CONTACT_SELECTED
 import com.manishjandu.bcontacts.utils.Constants.FRAGMENT_SELECT_MULTIPLE_CONTACT_REQUEST_KEY
+import com.manishjandu.bcontacts.utils.Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE
 import com.manishjandu.bcontacts.utils.enums.FileType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -41,7 +44,7 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     private var _binding: FragmentAddEditMessageBinding?=null
     private val binding get()=_binding!!
     private val viewModel: AddEditMultipleUserViewModel by viewModels()
-    private val args : AddEditMultipleUserFragmentArgs by navArgs()
+    private val args: AddEditMultipleUserFragmentArgs by navArgs()
 
     private var selectedContacts=arrayListOf<Contact>()
     private lateinit var adapter: AddEditMultipleUserAdapter
@@ -67,12 +70,12 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         super.onViewCreated(view, savedInstanceState)
         _binding=FragmentAddEditMessageBinding.bind(view)
 
-        multipleUserMessageId = args.multipleUserMessageId
-        val fileType = args.fileType
+        multipleUserMessageId=args.multipleUserMessageId
+        val fileType=args.fileType
 
-        if(fileType == FileType.NEW){
-            multipleUserMessageId = System.currentTimeMillis().toInt()
-        }else{
+        if (fileType == FileType.NEW) {
+            multipleUserMessageId=null
+        } else {
             viewModel.getMessage(multipleUserMessageId!!)
         }
 
@@ -90,10 +93,10 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     private fun setupObserver() {
         viewModel.message.observe(viewLifecycleOwner) {
             it?.let {
-                textViewShowDate.text=getDateInString(it.day, it.month, it.year)
-                textViewShowTime.text=getTimeInAmPm(it.hour, it.minutes)
+                textViewShowDate.text=getDateInString(it.day, it.month + 1, it.year)
+                textViewShowTime.text=getTimeInAmPm(it.hour - 1, it.minutes)
                 editTextMessage.setText(it.message)
-                selectedContacts =it.contacts as ArrayList<Contact>
+                selectedContacts=it.contacts as ArrayList<Contact>
                 adapter.submitList(selectedContacts)
             }
         }
@@ -105,17 +108,19 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                         findNavController().popBackStack()
                     }
                     is AddEditMessageEvent.SetAlarm -> {
-                        val message = event.multipleUserMessage
-                        val phoneNumbers = getContactsInString(message.contacts)
+                        val message=event.multipleUserMessage
+                        val phoneNumbers=getContactsInString(message.contacts)
+                        val requestCode = MULTIPLE_USER_MESSAGE_REQUEST_CODE+message.multipleUserMessageId
                         setAlarm(
                             message.timeInMillis,
-                            message.multipleUserMessageId,
+                            requestCode,
                             message.message,
                             phoneNumbers
                         )
                     }
                     is AddEditMessageEvent.CancelAlarm -> {
-                        cancelAlarm(event.messageId)
+                        val requestCode = MULTIPLE_USER_MESSAGE_REQUEST_CODE+event.messageId
+                        cancelAlarm(requestCode)
                     }
                 }
             }
@@ -124,9 +129,9 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     }
 
     private fun getContactsInString(contacts: List<Contact>): String {
-        var contactsInString = ""
-        for(i in contacts){
-            contactsInString += "${i.phone},"
+        var contactsInString=""
+        for (i in contacts) {
+            contactsInString+="${i.phone},"
         }
         return contactsInString
     }
@@ -184,6 +189,8 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     private fun saveMessage() {
         val message=editTextMessage.text.toString()
 
+        Log.i(TAG, "saveMessage: multipleUserMessageId id is $multipleUserMessageId")
+
         if (minutes == null || day == null) {
             showErrorTimeNotSelected()
         } else if (message.isEmpty()) {
@@ -191,7 +198,7 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         } else {
             val timeInMills=createTimeInMills()
             viewModel.setFutureMessage(
-                multipleUserMessageId!!,
+                multipleUserMessageId,
                 selectedContacts,
                 message,
                 minutes!!,
@@ -200,10 +207,25 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                 month,
                 year,
                 timeInMills,
-                )
+            )
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
+    private fun createMessageId(): Int {
+//        val simpleDateFormat = SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z")
+//        val currentDateAndTime: String = simpleDateFormat.format(Date())
+
+        val date=Calendar.getInstance().get(Calendar.DATE);
+        val month=Calendar.getInstance().get(Calendar.MONTH);
+        val year=Calendar.getInstance().get(Calendar.YEAR)
+        val week= Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
+        val hour=Calendar.getInstance().get(Calendar.HOUR);
+        val minute=Calendar.getInstance().get(Calendar.MINUTE);
+        val sec=Calendar.getInstance().get(Calendar.SECOND);
+
+        return date + month + year + week + hour + minute + sec
+    }
 
     inner class OnClick() : OnSelectedContactClick {
         override fun onRemoveContact(position: Int) {

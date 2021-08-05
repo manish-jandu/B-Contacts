@@ -31,8 +31,8 @@ class MultiUserAdapter(private val onMessageClick: OnMessageClick) :
 
     inner class MultiUserViewHolder(binding: ItemMessageBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val message = binding.textViewMessage
-        val time = binding.textViewMessageTime
+        val textViewMessage = binding.textViewMessage
+        val textViewTime = binding.textViewMessageTime
 
         init {
             binding.root.setOnClickListener {
@@ -45,9 +45,30 @@ class MultiUserAdapter(private val onMessageClick: OnMessageClick) :
         }
 
         fun bind(item: MultipleUserMessage) {
-            val messageTime =  "${item.day}-${item.month}-${item.year} at ${item.hour}:${item.minutes}"
-            time.text = messageTime
-            message.text = item.message
+            val date=getDateInString(item.day, item.month + 1, item.year)
+            val time=getTimeInAmPm(item.hour - 1, item.minutes)
+            val msgTime="$date at $time "
+
+            textViewTime.text = msgTime
+            textViewMessage.text = item.message
+        }
+
+        private fun getDateInString(day: Int, month: Int, year: Int): String {
+            return "$day-$month-$year"
+        }
+
+        private fun getTimeInAmPm(hour: Int, minute: Int): String {
+            return if (hour > 12) {
+                String.format("%02d", hour - 12 + 1) + ":" + String.format(
+                    "%02d",
+                    minute
+                ) + "PM"
+            } else {
+                String.format("%02d", hour + 1) + ":" + String.format(
+                    "%02d",
+                    minute
+                ) + "AM"
+            }
         }
     }
 

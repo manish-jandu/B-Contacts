@@ -20,6 +20,7 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
 import com.manishjandu.bcontacts.ui.fragments.multipleUsers.MultipleUsersViewModel.MessageEvent
+import com.manishjandu.bcontacts.utils.Constants
 import com.manishjandu.bcontacts.utils.enums.FileType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -28,10 +29,10 @@ import javax.inject.Named
 
 @AndroidEntryPoint
 class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
-    private val viewModel:MultipleUsersViewModel by viewModels()
+    private val viewModel: MultipleUsersViewModel by viewModels()
     private var _binding: FragmentMessagesBinding?=null
     private val binding get()=_binding!!
-    private val messageAdapter = MultiUserAdapter(OnMessageClick())
+    private val messageAdapter=MultiUserAdapter(OnMessageClick())
 
     @Inject
     @Named("futureMessageIntent")
@@ -43,9 +44,9 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
     override fun onStart() {
         super.onStart()
         if (!checkSmsPermission()) {
-             setSmsPermission()
+            setSmsPermission()
         } else {
-             viewModel.getMessages()
+            viewModel.getMessages()
         }
     }
 
@@ -55,7 +56,10 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
 
         binding.floatingButtonAddMessage.setOnClickListener {
             val action=
-                MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment(FileType.NEW,0)
+                MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment(
+                    FileType.NEW,
+                    0
+                )
             findNavController().navigate(action)
         }
 
@@ -65,8 +69,8 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
 
     private fun setupRecyclerView() {
         binding.apply {
-            recyclerViewMessages.adapter = messageAdapter
-            recyclerViewMessages.layoutManager = LinearLayoutManager(requireContext())
+            recyclerViewMessages.adapter=messageAdapter
+            recyclerViewMessages.layoutManager=LinearLayoutManager(requireContext())
 
             ItemTouchHelper(object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
@@ -99,11 +103,13 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
                     is MessageEvent.ShowUndoMessageDelete -> {
                         Snackbar.make(requireView(), "Message Deleted", Snackbar.LENGTH_LONG)
                             .setAction("Undo") {
-                                val message = event.multipleUserMessage
-                                val phoneNumbers = getContactsInString(message.contacts)
+                                val message=event.multipleUserMessage
+                                val phoneNumbers=getContactsInString(message.contacts)
+                                val requestCode=
+                                    Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE + message.multipleUserMessageId
                                 setAlarm(
                                     message.timeInMillis,
-                                    message.multipleUserMessageId,
+                                    requestCode,
                                     message.message,
                                     phoneNumbers
                                 )
@@ -112,7 +118,9 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
                             .show()
                     }
                     is MessageEvent.CancelAlarm -> {
-                        cancelAlarm(event.messageId)
+                        val requestCode=
+                            Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE + event.messageId
+                        cancelAlarm(requestCode)
                     }
                 }
 
@@ -122,9 +130,9 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
     }
 
     private fun getContactsInString(contacts: List<Contact>): String {
-        var contactsInString = ""
-        for(i in contacts){
-            contactsInString += "${i.phone},"
+        var contactsInString=""
+        for (i in contacts) {
+            contactsInString+="${i.phone},"
         }
         return contactsInString
     }
@@ -151,7 +159,6 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
         val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
         alarmManager.cancel(pendingIntent)
     }
-
 
 
     private fun checkSmsPermission(): Boolean {
@@ -205,7 +212,10 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
     inner class OnMessageClick : MultiUserAdapter.OnMessageClick {
         override fun onRootClick(messageId: Int) {
             val action=
-                MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment(FileType.EDIT,messageId)
+                MultipleUsersFragmentDirections.actionMultipleUsersFragmentToAddEditMultipleUserFragment(
+                    FileType.EDIT,
+                    messageId
+                )
             findNavController().navigate(action)
         }
 

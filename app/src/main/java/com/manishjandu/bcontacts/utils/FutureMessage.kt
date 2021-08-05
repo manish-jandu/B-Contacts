@@ -21,6 +21,11 @@ class FutureMessage : BroadcastReceiver() {
                     for (item in numbers) {
                         if(item.isNotEmpty()){
                             sendSms(item, message)
+                            Log.i(
+                                "FutureMessage",
+                                "onReceive:  contactNumber is $item "
+                            )
+                            Thread.sleep(100)
                         }
                     }
             }

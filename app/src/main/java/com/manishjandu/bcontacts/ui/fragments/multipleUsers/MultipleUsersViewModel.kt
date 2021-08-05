@@ -28,7 +28,7 @@ class MultipleUsersViewModel @Inject constructor(private val repo: ContactsRepos
     }
 
     fun removeMessage(message: MultipleUserMessage)=viewModelScope.launch {
-        messageEventChannel.send(MessageEvent.ShowUndoMessageDelete(message))
+        messageEventChannel.send(MessageEvent.CancelAlarm(message.multipleUserMessageId))
         repo.removeMultipleUserMessage(message)
         getMessages()
         messageEventChannel.send(MessageEvent.ShowUndoMessageDelete(message))
