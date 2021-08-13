@@ -18,6 +18,8 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.databinding.FragmentAddEditMessageBinding
 import com.manishjandu.bcontacts.utils.AlarmManagerUtil
+import com.manishjandu.bcontacts.utils.TimeUtil.getDateInString
+import com.manishjandu.bcontacts.utils.TimeUtil.getTimeInAmPm
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.util.*
@@ -164,24 +166,6 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             textViewShowDate.text=dateInString
 
             showTimePicker()
-        }
-    }
-
-    private fun getDateInString(day: Int, month: Int, year: Int): String {
-        return "$day-$month-$year"
-    }
-
-    private fun getTimeInAmPm(hour: Int, minute: Int): String {
-        return if (hour > 12) {
-            String.format("%02d", hour - 12 + 1) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "PM"
-        } else {
-            String.format("%02d", hour + 1) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "AM"
         }
     }
 }

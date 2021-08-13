@@ -1,6 +1,5 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -27,6 +26,8 @@ import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.Constants.CONTACT_SELECTED
 import com.manishjandu.bcontacts.utils.Constants.FRAGMENT_SELECT_MULTIPLE_CONTACT_REQUEST_KEY
 import com.manishjandu.bcontacts.utils.Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE
+import com.manishjandu.bcontacts.utils.TimeUtil.getDateInString
+import com.manishjandu.bcontacts.utils.TimeUtil.getTimeInAmPm
 import com.manishjandu.bcontacts.utils.enums.FileType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -206,22 +207,6 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         }
     }
 
-    @SuppressLint("SimpleDateFormat")
-    private fun createMessageId(): Int {
-//        val simpleDateFormat = SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z")
-//        val currentDateAndTime: String = simpleDateFormat.format(Date())
-
-        val date=Calendar.getInstance().get(Calendar.DATE)
-        val month=Calendar.getInstance().get(Calendar.MONTH)
-        val year=Calendar.getInstance().get(Calendar.YEAR)
-        val week= Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)
-        val hour=Calendar.getInstance().get(Calendar.HOUR)
-        val minute=Calendar.getInstance().get(Calendar.MINUTE)
-        val sec=Calendar.getInstance().get(Calendar.SECOND)
-
-        return date + month + year + week + hour + minute + sec
-    }
-
     inner class OnClick() : OnSelectedContactClick {
         override fun onRemoveContact(position: Int) {
             val contact=adapter.currentList[position]
@@ -281,24 +266,6 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
             textViewShowDate.text=dateInString
 
             showTimePicker()
-        }
-    }
-
-    private fun getDateInString(day: Int, month: Int, year: Int): String {
-        return "$day-$month-$year"
-    }
-
-    private fun getTimeInAmPm(hour: Int, minute: Int): String {
-        return if (hour > 12) {
-            String.format("%02d", hour - 12 + 1) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "PM"
-        } else {
-            String.format("%02d", hour + 1) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "AM"
         }
     }
 

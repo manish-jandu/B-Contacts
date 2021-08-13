@@ -19,6 +19,8 @@ import com.manishjandu.bcontacts.databinding.FragmentAddEditBirthdayBinding
 import com.manishjandu.bcontacts.ui.fragments.addEditBirthday.AddEditBirthDayViewModel.AddEditBirthdayEvent
 import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.Constants
+import com.manishjandu.bcontacts.utils.TimeUtil.getDateInString
+import com.manishjandu.bcontacts.utils.TimeUtil.getTimeInAmPm
 import com.manishjandu.bcontacts.utils.checkSmsPermission
 import com.manishjandu.bcontacts.utils.setSmsPermission
 import dagger.hilt.android.AndroidEntryPoint
@@ -206,23 +208,6 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
         }
     }
 
-    private fun getDateInString(day: Int, month: Int, year: Int): String {
-        return "$day-$month-$year"
-    }
-
-    private fun getTimeInAmPm(hour: Int, minute: Int): String {
-        return if (hour > 12) {
-            String.format("%02d", hour - 12) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "PM"
-        } else {
-            String.format("%02d", hour) + ":" + String.format(
-                "%02d",
-                minute
-            ) + "AM"
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
