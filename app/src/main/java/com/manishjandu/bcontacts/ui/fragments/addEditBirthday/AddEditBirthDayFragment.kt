@@ -3,7 +3,6 @@ package com.manishjandu.bcontacts.ui.fragments.addEditBirthday
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -13,7 +12,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.afollestad.assent.*
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -24,6 +22,8 @@ import com.manishjandu.bcontacts.data.local.entities.Birthday
 import com.manishjandu.bcontacts.databinding.FragmentAddEditBirthdayBinding
 import com.manishjandu.bcontacts.ui.fragments.addEditBirthday.AddEditBirthDayViewModel.AddEditBirthdayEvent
 import com.manishjandu.bcontacts.utils.Constants
+import com.manishjandu.bcontacts.utils.checkSmsPermission
+import com.manishjandu.bcontacts.utils.setSmsPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.util.*
@@ -56,7 +56,7 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
     override fun onStart() {
         super.onStart()
         if (!checkSmsPermission()) {
-            setSmsPermission()
+            setSmsPermission{}
         }
     }
 
@@ -251,48 +251,6 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
         alarmManager.cancel(pendingIntent)
     }
 
-
-    private fun checkSmsPermission(): Boolean {
-        return isAllGranted(Permission.SEND_SMS)
-    }
-
-    private fun setSmsPermission() {
-        askForPermissions(
-            Permission.SEND_SMS,
-        ) { result ->
-
-            if (result.isAllGranted()) {
-
-            }
-
-            if (result[Permission.SEND_SMS] == GrantResult.DENIED
-            ) {
-                showSnackBarOnPermissionError("Permission is required", "Ok") {
-                    setSmsPermission()
-                }
-            }
-
-            if (result[Permission.SEND_SMS] == GrantResult.PERMANENTLY_DENIED
-            ) {
-                showSnackBarOnPermissionError("Goto Settings Page", "Settings") {
-                    showSystemAppDetailsPage()
-                }
-            }
-
-        }
-    }
-
-    private fun showSnackBarOnPermissionError(
-        message: String,
-        textAction: String,
-        action: () -> Unit
-    ) {
-        Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
-            .setAction(textAction) {
-                action()
-            }.setActionTextColor(Color.RED)
-            .show()
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

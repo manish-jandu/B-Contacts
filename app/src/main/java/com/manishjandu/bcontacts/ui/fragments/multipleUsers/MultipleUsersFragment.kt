@@ -14,14 +14,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
 import com.manishjandu.bcontacts.ui.fragments.multipleUsers.MultipleUsersViewModel.MessageEvent
 import com.manishjandu.bcontacts.utils.Constants
+import com.manishjandu.bcontacts.utils.checkSmsPermission
 import com.manishjandu.bcontacts.utils.enums.FileType
+import com.manishjandu.bcontacts.utils.setSmsPermission
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
@@ -44,7 +45,7 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
     override fun onStart() {
         super.onStart()
         if (!checkSmsPermission()) {
-            setSmsPermission()
+            setSmsPermission{ viewModel.getMessages()}
         } else {
             viewModel.getMessages()
         }
@@ -160,48 +161,6 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
         alarmManager.cancel(pendingIntent)
     }
 
-
-    private fun checkSmsPermission(): Boolean {
-        return isAllGranted(Permission.SEND_SMS)
-    }
-
-    private fun setSmsPermission() {
-        askForPermissions(
-            Permission.SEND_SMS,
-        ) { result ->
-
-            if (result.isAllGranted()) {
-                viewModel.getMessages()
-            }
-
-            if (result[Permission.SEND_SMS] == GrantResult.DENIED
-            ) {
-                showSnackBarOnPermissionError("Permission is required", "Ok") {
-                    setSmsPermission()
-                }
-            }
-
-            if (result[Permission.SEND_SMS] == GrantResult.PERMANENTLY_DENIED
-            ) {
-                showSnackBarOnPermissionError("Goto Settings Page", "Settings") {
-                    showSystemAppDetailsPage()
-                }
-            }
-
-        }
-    }
-
-    private fun showSnackBarOnPermissionError(
-        message: String,
-        textAction: String,
-        action: () -> Unit
-    ) {
-        Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
-            .setAction(textAction) {
-                action()
-            }.setActionTextColor(Color.RED)
-            .show()
-    }
 
 
     override fun onDestroyView() {

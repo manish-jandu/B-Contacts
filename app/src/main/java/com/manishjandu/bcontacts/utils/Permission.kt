@@ -3,15 +3,15 @@ package com.manishjandu.bcontacts.utils
 import android.graphics.Color
 import android.view.View
 import androidx.fragment.app.Fragment
-import com.afollestad.assent.GrantResult
-import com.afollestad.assent.Permission
-import com.afollestad.assent.askForPermissions
-import com.afollestad.assent.isAllGranted
-import com.afollestad.assent.showSystemAppDetailsPage
+import com.afollestad.assent.*
 import com.google.android.material.snackbar.Snackbar
 
 fun Fragment.checkReadWriteContactPermission(): Boolean {
     return isAllGranted(Permission.READ_CONTACTS, Permission.WRITE_CONTACTS)
+}
+
+fun Fragment.checkSmsPermission(): Boolean {
+    return isAllGranted(Permission.SEND_SMS)
 }
 
 fun Fragment.setReadWriteContactPermission(ifGrantedExecute: () -> Unit) {
@@ -41,6 +41,33 @@ fun Fragment.setReadWriteContactPermission(ifGrantedExecute: () -> Unit) {
             result[Permission.WRITE_CONTACTS] == GrantResult.PERMANENTLY_DENIED
         ) {
             showSnackBarOnPermissionError(requireView(), "Accept Contacts Permission", "Settings") {
+                showSystemAppDetailsPage()
+            }
+        }
+
+    }
+}
+
+fun Fragment.setSmsPermission(ifGrantedExecute: () -> Unit) {
+    askForPermissions(
+        Permission.SEND_SMS,
+    ) { result ->
+
+        val isAllGranted=isAllGranted(Permission.SEND_SMS)
+
+        if (isAllGranted) {
+            ifGrantedExecute()
+        }
+
+        if (result[Permission.SEND_SMS] == GrantResult.DENIED) {
+            showSnackBarOnPermissionError(requireView(), "Permission is required", "Ok") {
+                setSmsPermission(ifGrantedExecute)
+            }
+        }
+
+        if (result[Permission.SEND_SMS] == GrantResult.PERMANENTLY_DENIED
+        ) {
+            showSnackBarOnPermissionError(requireView(), "Accept Sms Permission", "Settings") {
                 showSystemAppDetailsPage()
             }
         }
