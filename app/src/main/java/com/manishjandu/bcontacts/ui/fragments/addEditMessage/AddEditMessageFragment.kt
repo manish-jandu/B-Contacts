@@ -1,13 +1,9 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditMessage
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +17,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.local.entities.Message
 import com.manishjandu.bcontacts.databinding.FragmentAddEditMessageBinding
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import java.util.*
@@ -43,11 +40,8 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
     private var year=0
 
     @Inject
-    @Named("futureMessageIntent")
-      lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
+    @Named("AlarmMangerUtil")
+    lateinit var alarmManagerUtil: AlarmManagerUtil
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -106,7 +100,8 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                         findNavController().popBackStack()
                     }
                     is AddEditMessageViewModel.AddEditMessageEvent.SetAlarm -> {
-                        setAlarm(
+                        alarmManagerUtil.setAlarm(
+                            requireContext(),
                             event.message.timeInMillis,
                             event.message.messageId,
                             event.message.message,
@@ -114,7 +109,7 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
                         )
                     }
                     is AddEditMessageViewModel.AddEditMessageEvent.CancelAlarm -> {
-                        cancelAlarm(event.messageId)
+                        alarmManagerUtil.cancelAlarm(requireContext(),event.messageId)
                     }
                 }
             }
@@ -189,28 +184,4 @@ class AddEditMessageFragment : Fragment(R.layout.fragment_add_edit_message) {
             ) + "AM"
         }
     }
-
-    private fun setAlarm(
-        timeInMillis: Long,
-        requestCode: Int,
-        message: String,
-        contactNumber: String
-    ) {
-        intent.putExtra("message", message)
-        intent.putExtra("contactNumber", contactNumber)
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-
-        alarmManager.set(
-            AlarmManager.RTC,
-            timeInMillis,
-            pendingIntent
-        )
-        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
-
 }

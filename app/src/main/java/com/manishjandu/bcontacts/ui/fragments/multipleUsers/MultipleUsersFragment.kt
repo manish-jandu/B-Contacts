@@ -1,12 +1,8 @@
 package com.manishjandu.bcontacts.ui.fragments.multipleUsers
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +15,7 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
 import com.manishjandu.bcontacts.ui.fragments.multipleUsers.MultipleUsersViewModel.MessageEvent
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.Constants
 import com.manishjandu.bcontacts.utils.checkSmsPermission
 import com.manishjandu.bcontacts.utils.enums.FileType
@@ -36,11 +33,8 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
     private val messageAdapter=MultiUserAdapter(OnMessageClick())
 
     @Inject
-    @Named("futureMessageIntent")
-    lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
+    @Named("AlarmMangerUtil")
+    lateinit var alarmManagerUtil: AlarmManagerUtil
 
     override fun onStart() {
         super.onStart()
@@ -108,7 +102,8 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
                                 val phoneNumbers=getContactsInString(message.contacts)
                                 val requestCode=
                                     Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE + message.multipleUserMessageId
-                                setAlarm(
+                                alarmManagerUtil.setAlarm(
+                                    requireContext(),
                                     message.timeInMillis,
                                     requestCode,
                                     message.message,
@@ -121,7 +116,7 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
                     is MessageEvent.CancelAlarm -> {
                         val requestCode=
                             Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE + event.messageId
-                        cancelAlarm(requestCode)
+                        alarmManagerUtil.cancelAlarm(requireContext(),requestCode)
                     }
                 }
 
@@ -137,30 +132,6 @@ class MultipleUsersFragment : Fragment(R.layout.fragment_messages) {
         }
         return contactsInString
     }
-
-    private fun setAlarm(
-        timeInMillis: Long,
-        requestCode: Int,
-        message: String,
-        contactNumber: String
-    ) {
-        intent.putExtra("message", message)
-        intent.putExtra("contactNumber", contactNumber)
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-
-        alarmManager.set(
-            AlarmManager.RTC,
-            timeInMillis,
-            pendingIntent
-        )
-        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
-
 
 
     override fun onDestroyView() {

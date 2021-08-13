@@ -6,6 +6,7 @@ import android.content.Intent
 import com.manishjandu.bcontacts.data.ContactsRepository
 import com.manishjandu.bcontacts.data.local.ContactDao
 import com.manishjandu.bcontacts.data.local.LocalDatabase
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.FutureMessage
 import dagger.Module
 import dagger.Provides
@@ -50,5 +51,15 @@ object AppModule {
         @ApplicationContext context: Context
     ): Intent {
         return Intent(context, FutureMessage::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @Named("AlarmMangerUtil")
+    fun providesAlarmMangerUtil(
+        @Named("futureMessageIntent")intent: Intent,
+        alarmManager: AlarmManager
+    ):AlarmManagerUtil{
+        return AlarmManagerUtil(intent,alarmManager)
     }
 }

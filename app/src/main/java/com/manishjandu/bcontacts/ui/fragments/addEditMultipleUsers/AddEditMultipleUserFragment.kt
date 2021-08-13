@@ -1,15 +1,11 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
@@ -27,6 +23,7 @@ import com.manishjandu.bcontacts.data.models.Contact
 import com.manishjandu.bcontacts.databinding.FragmentAddEditMessageBinding
 import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserAdapter.OnSelectedContactClick
 import com.manishjandu.bcontacts.ui.fragments.addEditMultipleUsers.AddEditMultipleUserViewModel.AddEditMessageEvent
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.Constants.CONTACT_SELECTED
 import com.manishjandu.bcontacts.utils.Constants.FRAGMENT_SELECT_MULTIPLE_CONTACT_REQUEST_KEY
 import com.manishjandu.bcontacts.utils.Constants.MULTIPLE_USER_MESSAGE_REQUEST_CODE
@@ -60,11 +57,8 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
     private var year=0
 
     @Inject
-    @Named("futureMessageIntent")
-    lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
+    @Named("AlarmMangerUtil")
+    lateinit var alarmManagerUtil: AlarmManagerUtil
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,7 +105,8 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                         val message=event.multipleUserMessage
                         val phoneNumbers=getContactsInString(message.contacts)
                         val requestCode = MULTIPLE_USER_MESSAGE_REQUEST_CODE+message.multipleUserMessageId
-                        setAlarm(
+                        alarmManagerUtil.setAlarm(
+                            requireContext(),
                             message.timeInMillis,
                             requestCode,
                             message.message,
@@ -120,7 +115,7 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
                     }
                     is AddEditMessageEvent.CancelAlarm -> {
                         val requestCode = MULTIPLE_USER_MESSAGE_REQUEST_CODE+event.messageId
-                        cancelAlarm(requestCode)
+                        alarmManagerUtil.cancelAlarm(requireContext(),requestCode)
                     }
                 }
             }
@@ -216,13 +211,13 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
 //        val simpleDateFormat = SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z")
 //        val currentDateAndTime: String = simpleDateFormat.format(Date())
 
-        val date=Calendar.getInstance().get(Calendar.DATE);
-        val month=Calendar.getInstance().get(Calendar.MONTH);
+        val date=Calendar.getInstance().get(Calendar.DATE)
+        val month=Calendar.getInstance().get(Calendar.MONTH)
         val year=Calendar.getInstance().get(Calendar.YEAR)
-        val week= Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
-        val hour=Calendar.getInstance().get(Calendar.HOUR);
-        val minute=Calendar.getInstance().get(Calendar.MINUTE);
-        val sec=Calendar.getInstance().get(Calendar.SECOND);
+        val week= Calendar.getInstance().get(Calendar.WEEK_OF_YEAR)
+        val hour=Calendar.getInstance().get(Calendar.HOUR)
+        val minute=Calendar.getInstance().get(Calendar.MINUTE)
+        val sec=Calendar.getInstance().get(Calendar.SECOND)
 
         return date + month + year + week + hour + minute + sec
     }
@@ -307,28 +302,6 @@ class AddEditMultipleUserFragment : Fragment(R.layout.fragment_add_edit_message)
         }
     }
 
-    private fun setAlarm(
-        timeInMillis: Long,
-        requestCode: Int,
-        message: String,
-        contactNumber: String
-    ) {
-        intent.putExtra("message", message)
-        intent.putExtra("contactNumber", contactNumber)
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-
-        alarmManager.set(
-            AlarmManager.RTC,
-            timeInMillis,
-            pendingIntent
-        )
-        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -1,12 +1,8 @@
 package com.manishjandu.bcontacts.ui.fragments.messages
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -19,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.databinding.FragmentMessagesBinding
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.checkSmsPermission
 import com.manishjandu.bcontacts.utils.setSmsPermission
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,11 +33,8 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
     private var contactId: Long?=null
 
     @Inject
-    @Named("futureMessageIntent")
-    lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
+    @Named("AlarmMangerUtil")
+    lateinit var alarmManagerUtil: AlarmManagerUtil
 
     override fun onStart() {
         super.onStart()
@@ -81,7 +75,8 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
                     is MessagesViewModel.MessageEvent.ShowUndoMessageDelete -> {
                         Snackbar.make(requireView(), "Message Deleted", Snackbar.LENGTH_LONG)
                             .setAction("Undo") {
-                                setAlarm(
+                                alarmManagerUtil.setAlarm(
+                                    requireContext(),
                                     event.message.timeInMillis,
                                     event.message.messageId,
                                     event.message.message,
@@ -92,7 +87,7 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
                             .show()
                     }
                     is MessagesViewModel.MessageEvent.CancelAlarm -> {
-                        cancelAlarm(event.messageId)
+                        alarmManagerUtil.cancelAlarm(requireContext(),event.messageId)
                     }
                 }
 
@@ -130,29 +125,6 @@ class MessagesFragment : Fragment(R.layout.fragment_messages) {
         override fun onRootClick(messageId: Int, contactId: Long, contactNumber: String) {
             navigateToAddEditMessage(contactId, contactNumber, messageId)
         }
-    }
-
-    private fun setAlarm(
-        timeInMillis: Long,
-        requestCode: Int,
-        message: String,
-        contactNumber: String
-    ) {
-        intent.putExtra("message", message)
-        intent.putExtra("contactNumber", contactNumber)
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-
-        alarmManager.set(
-            AlarmManager.RTC,
-            timeInMillis,
-            pendingIntent
-        )
-        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
     }
 
     private fun navigateToAddEditMessage(contactId: Long, contactNumber: String, messageId: Int) {

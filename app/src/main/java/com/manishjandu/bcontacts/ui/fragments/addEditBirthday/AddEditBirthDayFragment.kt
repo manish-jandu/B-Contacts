@@ -1,12 +1,8 @@
 package com.manishjandu.bcontacts.ui.fragments.addEditBirthday
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +17,7 @@ import com.manishjandu.bcontacts.R
 import com.manishjandu.bcontacts.data.local.entities.Birthday
 import com.manishjandu.bcontacts.databinding.FragmentAddEditBirthdayBinding
 import com.manishjandu.bcontacts.ui.fragments.addEditBirthday.AddEditBirthDayViewModel.AddEditBirthdayEvent
+import com.manishjandu.bcontacts.utils.AlarmManagerUtil
 import com.manishjandu.bcontacts.utils.Constants
 import com.manishjandu.bcontacts.utils.checkSmsPermission
 import com.manishjandu.bcontacts.utils.setSmsPermission
@@ -47,11 +44,8 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
     private var year=0
 
     @Inject
-    @Named("futureMessageIntent")
-    lateinit var intent: Intent
-
-    @Inject
-    lateinit var alarmManager: AlarmManager
+    @Named("AlarmMangerUtil")
+    lateinit var alarmManagerUtil: AlarmManagerUtil
 
     override fun onStart() {
         super.onStart()
@@ -110,7 +104,8 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
                     is AddEditBirthdayEvent.SetAlarm -> {
                         val birthday=event.birthday
                         val requestCode=Constants.BIRTHDAY_REQUEST_CODE + birthday.requestCode
-                        setAlarm(
+                        alarmManagerUtil.setAlarm(
+                            requireContext(),
                             birthday.timeInMillis,
                             requestCode,
                             birthday.birthdayMessage,
@@ -120,7 +115,8 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
                     is AddEditBirthdayEvent.CancelAlarm -> {
                         val birthday=event.birthday
                         val requestCode=Constants.BIRTHDAY_REQUEST_CODE + birthday.requestCode
-                        cancelAlarm(
+                        alarmManagerUtil.cancelAlarm(
+                            requireContext(),
                             requestCode
                         )
                     }
@@ -139,7 +135,7 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
             showErrorEmptyMessage()
         } else {
             val timeInMillis=createTimeInMills()
-            val message=Birthday(
+            val message =Birthday(
                 requestCode,
                 contactNumber,
                 message,
@@ -227,30 +223,6 @@ class AddEditBirthDayFragment : Fragment(R.layout.fragment_add_edit_birthday) {
             ) + "AM"
         }
     }
-
-    private fun setAlarm(
-        timeInMillis: Long,
-        requestCode: Int,
-        message: String,
-        contactNumber: String
-    ) {
-        intent.putExtra("message", message)
-        intent.putExtra("contactNumber", contactNumber)
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-
-        alarmManager.set(
-            AlarmManager.RTC,
-            timeInMillis,
-            pendingIntent
-        )
-        Toast.makeText(requireContext(), "Message is set", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun cancelAlarm(requestCode: Int) {
-        val pendingIntent=PendingIntent.getBroadcast(requireContext(), requestCode, intent, 0)
-        alarmManager.cancel(pendingIntent)
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
